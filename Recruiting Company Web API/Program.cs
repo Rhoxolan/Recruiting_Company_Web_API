@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Services.AccountServices;
 using System.Text;
 
@@ -14,6 +15,14 @@ builder.Services.AddDbContext<ApplicationContext>(opt
 builder.Services.AddControllers();
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+	.AddEntityFrameworkStores<ApplicationContext>();
+
+builder.Services.AddIdentityCore<Employer>()
+	.AddRoles<IdentityRole>()
+	.AddEntityFrameworkStores<ApplicationContext>();
+
+builder.Services.AddIdentityCore<Seeker>()
+	.AddRoles<IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationContext>();
 
 builder.Services.AddAuthentication(opt =>
