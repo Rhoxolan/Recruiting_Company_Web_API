@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Recruiting_Company_Web_API.Services.AccountServices
+namespace Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService
 {
     public class JWTService : IJWTService
     {

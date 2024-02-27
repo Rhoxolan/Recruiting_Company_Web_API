@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Recruiting_Company_Web_API.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using Recruiting_Company_Web_API.Filters;
 using Recruiting_Company_Web_API.Models.AccountModels;
-using Recruiting_Company_Web_API.Services.AccountServices;
+using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
+using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
+using Recruiting_Company_Web_API.Types.Exceptions;
 
 namespace Recruiting_Company_Web_API.Controllers
 {
@@ -11,50 +11,28 @@ namespace Recruiting_Company_Web_API.Controllers
 	[ApiController]
 	public class AccountController : ControllerBase
 	{
-		private readonly UserManager<Employer> _employerManager;
-		private readonly UserManager<Seeker> _seekerManager;
+		private readonly IAccountService _accountService;
 		private readonly IJWTService _JWTService;
 
-		public AccountController(UserManager<Employer> employerManager, UserManager<Seeker> seekerManager, IJWTService jWTService)
+		public AccountController(IJWTService jWTService, IAccountService accountService)
 		{
-			_employerManager = employerManager;
-			_seekerManager = seekerManager;
 			_JWTService = jWTService;
+			_accountService = accountService;
 		}
 
 		[HttpPost("register")]
-		//Фильтр
+		[ValidateModelFilter]
 		public async Task<IActionResult> Register(RegisterModel model)
 		{
 			try
 			{
-				IdentityUser? user = null;
-				IdentityResult? result = null;
-				if (model.AccountType == 1)
-				{
-					user = new Seeker
-					{
-						UserName = model.Login,
-						Age = model.Age!.Value,
-						Name = model.Name!
-					};
-					result = await _seekerManager.CreateAsync((Seeker)user, model.Password);
-				}
-				else if (model.AccountType == 2)
-				{
-					user = new Employer
-					{
-						UserName = model.Login,
-						CompanyName = model.CompanyName!
-					};
-					result = await _employerManager.CreateAsync((Employer)user, model.Password);
-				}
-				if (result == null || user == null || !result.Succeeded)
-				{
-					return BadRequest(new { result?.Errors });
-				}
+				var user = await _accountService.CreateUserAsync(model);
 				var token = _JWTService.GenerateJWTToken(user);
 				return Ok(new { token });
+			}
+			catch (RecruitingCompanyAuthenticationException ex)
+			{
+				return BadRequest(ex.Message);
 			}
 			catch
 			{
@@ -63,35 +41,18 @@ namespace Recruiting_Company_Web_API.Controllers
 		}
 
 		[HttpPost("login")]
-		//Фильтр
+		[ValidateModelFilter]
 		public async Task<IActionResult> Login(LoginModel model)
 		{
 			try
 			{
-				IdentityUser? user = null;
-				bool checkPassword = false;
-				if (model.AccountType == 1)
-				{
-					user = await _seekerManager.FindByNameAsync(model.Login);
-					if (user != null)
-					{
-						checkPassword = await _seekerManager.CheckPasswordAsync((Seeker)user, model.Password);
-					}
-				}
-				else if (model.AccountType == 2)
-				{
-					user = await _employerManager.FindByNameAsync(model.Login);
-					if (user != null)
-					{
-						checkPassword = await _employerManager.CheckPasswordAsync((Employer)user, model.Password);
-					}
-				}
-				if (user == null || !checkPassword)
-				{
-					return Unauthorized();
-				}
+				var user = await _accountService.SignInUserAsync(model);
 				var token = _JWTService.GenerateJWTToken(user);
 				return Ok(new { token });
+			}
+			catch (RecruitingCompanyAuthenticationException ex)
+			{
+				return Unauthorized(ex.Message);
 			}
 			catch
 			{

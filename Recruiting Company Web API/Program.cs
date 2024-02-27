@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.Entities;
-using Recruiting_Company_Web_API.Services.AccountServices;
+using Recruiting_Company_Web_API.Filters;
+using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
+using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,7 +47,9 @@ builder.Services.AddAuthentication(opt =>
 
 builder.Services.AddEndpointsApiExplorer()
 	.AddSwaggerGen()
-	.AddTransient<IJWTService, JWTService>();
+	.AddTransient<IJWTService, JWTService>()
+	.AddTransient<IAccountService, AccountService>()
+	.AddScoped<ValidateModelFilterAttribute>();
 
 var app = builder.Build();
 
