@@ -17,30 +17,28 @@ namespace Recruiting_Company_Web_API.Services.AccountServices.AccountService
 
 		public async Task<(IdentityResult, IdentityUser)> CreateUserAsync(RegisterModel model)
 		{
-			(IdentityResult, IdentityUser) createResult = new();
 			if (model.AccountType == 1)
 			{
-				createResult = await CreateSeekerAsync(model.Login, model.Age!.Value, model.Name!, model.Password);
+				return await CreateSeekerAsync(model.Login, model.Age!.Value, model.Name!, model.Password);
 			}
 			else if (model.AccountType == 2)
 			{
-				createResult = await CreateEmployerAsync(model.Login, model.CompanyName!, model.Password);
+				return await CreateEmployerAsync(model.Login, model.CompanyName!, model.Password);
 			}
-			return createResult;
+			return default;
 		}
 
 		public async Task<(bool, IdentityUser?)> SignInUserAsync(LoginModel model)
 		{
-			(bool, IdentityUser?) signInResult = new();
 			if (model.AccountType == 1)
 			{
-				signInResult = await SignInSeekerAsync(model.Login, model.Password);
+				return await SignInSeekerAsync(model.Login, model.Password);
 			}
 			else if (model.AccountType == 2)
 			{
-				signInResult = await SignInEmployerAsync(model.Login, model.Password);
+				return await SignInEmployerAsync(model.Login, model.Password);
 			}
-			return signInResult;
+			return default;
 		}
 
 		private async Task<(IdentityResult, IdentityUser)> CreateSeekerAsync(string login, short age, string name, string password)
