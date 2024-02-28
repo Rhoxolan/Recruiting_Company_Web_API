@@ -3,7 +3,6 @@ using Recruiting_Company_Web_API.Filters;
 using Recruiting_Company_Web_API.Models.AccountModels;
 using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
-using Recruiting_Company_Web_API.Types.Exceptions;
 
 namespace Recruiting_Company_Web_API.Controllers
 {
@@ -26,13 +25,13 @@ namespace Recruiting_Company_Web_API.Controllers
 		{
 			try
 			{
-				var user = await _accountService.CreateUserAsync(model);
-				var token = _JWTService.GenerateJWTToken(user);
+				var result = await _accountService.CreateUserAsync(model);
+				if (!result.result.Succeeded)
+				{
+					return BadRequest(new { error = result.result.Errors.First().Description });
+				}
+				var token = _JWTService.GenerateJWTToken(result.user);
 				return Ok(new { token });
-			}
-			catch (RecruitingCompanyAuthenticationException ex)
-			{
-				return BadRequest(ex.Message);
 			}
 			catch
 			{
@@ -46,13 +45,13 @@ namespace Recruiting_Company_Web_API.Controllers
 		{
 			try
 			{
-				var user = await _accountService.SignInUserAsync(model);
-				var token = _JWTService.GenerateJWTToken(user);
+				var result = await _accountService.SignInUserAsync(model);
+				if (result.user == null || !result.result)
+				{
+					return Unauthorized("Authentication failed!");
+				}
+				var token = _JWTService.GenerateJWTToken(result.user);
 				return Ok(new { token });
-			}
-			catch (RecruitingCompanyAuthenticationException ex)
-			{
-				return Unauthorized(ex.Message);
 			}
 			catch
 			{
