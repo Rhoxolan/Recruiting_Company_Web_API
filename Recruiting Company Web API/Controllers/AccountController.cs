@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Recruiting_Company_Web_API.Filters;
+//using Recruiting_Company_Web_API.Filters;
 using Recruiting_Company_Web_API.Models.AccountModels;
 using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
@@ -20,7 +20,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		}
 
 		[HttpPost("register")]
-		[ValidateModelFilter]
+		//[ValidateModelFilter] //Убрать, если не возникнет необходимости в использовании
 		public async Task<IActionResult> Register(RegisterModel model)
 		{
 			try
@@ -40,7 +40,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		}
 
 		[HttpPost("login")]
-		[ValidateModelFilter]
+		//[ValidateModelFilter]
 		public async Task<IActionResult> Login(LoginModel model)
 		{
 			try

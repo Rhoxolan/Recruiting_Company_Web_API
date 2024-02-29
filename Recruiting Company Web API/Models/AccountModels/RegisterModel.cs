@@ -15,7 +15,7 @@ namespace Recruiting_Company_Web_API.Models.AccountModels
 		[Range(1, 2, ErrorMessage = "Invalid Account Type value")]
 		public short AccountType { get; set; }
 
-		[Range(16, 150, ErrorMessage = "Age must be upper than 16")]
+		[Range(16, 150, ErrorMessage = "Age must be 16 or older")]
 		public short? Age { get; set; }
 
 		[StringLength(50, ErrorMessage = "Name length must be lower than 50")]

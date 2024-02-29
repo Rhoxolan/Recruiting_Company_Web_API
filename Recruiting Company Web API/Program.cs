@@ -16,6 +16,10 @@ builder.Services.AddDbContext<ApplicationContext>(opt
 
 builder.Services.AddControllers();
 
+builder.Services.AddCors(opt =>
+	opt.AddDefaultPolicy(builder =>
+	builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod())); //Провести более тонкую настройку
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationContext>();
 
@@ -60,6 +64,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
