@@ -4,6 +4,6 @@ namespace Recruiting_Company_Web_API.Entities
 {
 	public class Employer : IdentityUser
 	{
-		public string CompanyName { get; set; } = default!;
+		public required string CompanyName { get; set; }
 	}
 }

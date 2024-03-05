@@ -4,8 +4,8 @@ namespace Recruiting_Company_Web_API.Entities
 {
 	public class Seeker : IdentityUser
 	{
-		public short Age { get; set; }
+		public required short Age { get; set; }
 
-		public string Name { get; set; } = default!;
+		public required string Name { get; set; }
 	}
 }

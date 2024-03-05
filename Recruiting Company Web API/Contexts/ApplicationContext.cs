@@ -10,6 +10,8 @@ namespace Recruiting_Company_Web_API.Contexts
 		public DbSet<IdentityUser> IdentityUsers { get; set; }
 		public DbSet<Employer> Employers { get; set; }
 		public DbSet<Seeker> Seekers { get; set; }
+		public DbSet<Vacancy> Vacancies { get; set; }
+		public DbSet<Category> Categories { get; set; }
 
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
 		{
