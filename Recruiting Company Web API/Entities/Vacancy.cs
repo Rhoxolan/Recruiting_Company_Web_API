@@ -6,6 +6,8 @@ namespace Recruiting_Company_Web_API.Entities
 	{
 		public ulong Id { get; set; }
 
+		public required DateTime CreateDate { get; set; }
+
 		[MaxLength(100)]
 		public required string Title { get; set; }
 
@@ -22,6 +24,8 @@ namespace Recruiting_Company_Web_API.Entities
 		public required string Description { get; set; }
 
 		public required Category Category { get; set; }
+
+		public required Employer Employer { get; set; }
 
 	}
 }
