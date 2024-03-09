@@ -24,16 +24,11 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				if (userNameClaim == null)
+				var (findUserResult, vacancies) = await _employerService.GetVacanciesAsync(userNameClaim!.Value);
+				if(!findUserResult || vacancies == null)
 				{
 					return BadRequest();
 				}
-				var user = await _employerService.GetEmployerAsync(userNameClaim.Value);
-				if (user == null)
-				{
-					return BadRequest();
-				}
-				var vacancies = await _employerService.GetVacanciesAsync(user);
 				return Ok(new { vacancies = vacancies.Select(v => new { v.Id, CategoryID = v.Category.Id, v.CreateDate,
 					v.Title, v.Salary, v.PhoneNumber, v.EMail, v.Description })});
 			}
@@ -49,16 +44,11 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				if (userNameClaim == null)
+				var (findUserResult, vacancy) = await _employerService.AddVacancyAsync(model, userNameClaim!.Value);
+				if (!findUserResult || vacancy == null)
 				{
 					return BadRequest();
 				}
-				var user = await _employerService.GetEmployerAsync(userNameClaim.Value);
-				if (user == null)
-				{
-					return BadRequest();
-				}
-				var vacancy = await _employerService.AddVacancyAsync(model, user);
 				return Ok(new { vacancy.Id, CategoryID = vacancy.Category.Id, vacancy.CreateDate, vacancy.Title,
 					vacancy.Salary, vacancy.PhoneNumber, vacancy.EMail, vacancy.Description });
 			}

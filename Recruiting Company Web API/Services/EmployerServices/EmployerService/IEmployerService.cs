@@ -5,10 +5,8 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 {
 	public interface IEmployerService
 	{
-		Task<List<Vacancy>> GetVacanciesAsync(Employer employer);
+		Task<(bool findUserResult, Vacancy? vacancy)> AddVacancyAsync(VacancyModel model, string name);
 
-		Task<Employer?> GetEmployerAsync(string name);
-
-		Task<Vacancy> AddVacancyAsync(VacancyModel model, Employer employer);
+		Task<(bool findUserResult, List<Vacancy>? vacancies)> GetVacanciesAsync(string name);
 	}
 }
