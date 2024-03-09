@@ -43,6 +43,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					CreateDate = DateTime.Now,
 					Category = category,
 					Title = model.Title,
+					Location = model.Location,
 					Salary = model.Salary,
 					PhoneNumber = model.PhoneNumber,
 					EMail = model.EMail,

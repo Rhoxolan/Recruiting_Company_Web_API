@@ -11,6 +11,9 @@ namespace Recruiting_Company_Web_API.Models.EmployerModels
 		[MaxLength(100)]
 		public string Title { get; set; } = default!;
 
+		[MaxLength(50)]
+		public string? Location { get; set; }
+
 		[Range(0, int.MaxValue)]
 		public int? Salary { get; set; }
 

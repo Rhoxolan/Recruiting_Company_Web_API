@@ -11,6 +11,9 @@ namespace Recruiting_Company_Web_API.Entities
 		[MaxLength(100)]
 		public required string Title { get; set; }
 
+		[MaxLength(50)]
+		public string? Location { get; set; }
+
 		public int? Salary { get; set; }
 
 		[MaxLength(100)]

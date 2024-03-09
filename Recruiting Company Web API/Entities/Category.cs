@@ -6,7 +6,7 @@ namespace Recruiting_Company_Web_API.Entities
 	{
 		public short Id { get; set; }
 
-		[MaxLength(15)]
+		[MaxLength(25)]
 		public required string Name { get; set; }
 	}
 }
