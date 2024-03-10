@@ -17,7 +17,6 @@ namespace Recruiting_Company_Web_API.Contexts
 
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
 		{
-			Database.EnsureDeleted();
 			Database.EnsureCreated();
 		}
 
