@@ -24,7 +24,10 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
-				vacancies = await _context.Vacancies.Include(v => v.Employer).Where(v => v.Employer.Id == employer!.Id).ToListAsync();
+				vacancies = await _context.Vacancies
+					.Include(v => v.Category)
+					.Where(v => v.Employer.Id == employer!.Id)
+					.ToListAsync();
 			}
 			return (findUserResult, vacancies);
 		}
