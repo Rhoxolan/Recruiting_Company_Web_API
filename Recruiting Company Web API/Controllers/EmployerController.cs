@@ -88,7 +88,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findVacancyResult) = await _employerService.DeleteVacansyAsync(id, userNameClaim!.Value);
+				var (findUserResult, findVacancyResult) = await _employerService.DeleteVacancyAsync(id, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();

@@ -88,7 +88,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return (findUserResult, vacancy);
 		}
 
-		public async Task<(bool, bool)> DeleteVacansyAsync(ulong id, string name)
+		public async Task<(bool, bool)> DeleteVacancyAsync(ulong id, string name)
 		{
 			bool findUserResult;
 			bool findVacancyResult = false;
