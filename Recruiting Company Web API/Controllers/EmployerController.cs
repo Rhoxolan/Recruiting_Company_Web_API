@@ -57,5 +57,52 @@ namespace Recruiting_Company_Web_API.Controllers
 				return Problem("Error. Please contact to developer");
 			}
 		}
+
+		[HttpPatch("EditVacansy")]
+		public async Task<IActionResult> EditVacancy(VacancyModel model)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, vacancy) = await _employerService.EditVacansyAsync(model, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (vacancy == null)
+				{
+					return NotFound();
+				}
+				return Ok(new { vacancy = new { vacancy.Id, CategoryID = vacancy.Category.Id, vacancy.CreateDate,
+					vacancy.Title, vacancy.Salary, vacancy.PhoneNumber, vacancy.EMail, vacancy.Description } });
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
+		[HttpDelete("DeleteVacancy")]
+		public async Task<IActionResult> DeleteVacancy(ulong id)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, findVacancyResult) = await _employerService.DeleteVacansyAsync(id, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (!findVacancyResult)
+				{
+					return NotFound();
+				}
+				return Ok();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
 	}
 }

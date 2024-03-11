@@ -4,6 +4,8 @@ namespace Recruiting_Company_Web_API.Models.EmployerModels
 {
 	public class VacancyModel
 	{
+		public ulong? Id { get; set; }
+
 		[Required]
 		public short CategoryID { get; set; }
 

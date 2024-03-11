@@ -58,5 +58,51 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			}
 			return (findUserResult, vacancy);
 		}
+
+		public async Task<(bool, Vacancy?)> EditVacansyAsync(VacancyModel model, string name)
+		{
+			bool findUserResult;
+			Vacancy? vacancy = null;
+			var employer = await _userManager.FindByNameAsync(name);
+			if (findUserResult = employer != null)
+			{
+				var category = await _context.Categories.FindAsync(model.CategoryID)
+					?? throw new Exception("Category is null");
+				vacancy = await _context.Vacancies
+					.Include(v => v.Category)
+					.Include(v => v.Employer)
+					.Where(v => v.Employer.Id == employer!.Id)
+					.FirstOrDefaultAsync();
+				if (vacancy != null)
+				{
+					vacancy.Title = model.Title;
+					vacancy.Location = model.Location;
+					vacancy.Category = category;
+					vacancy.Salary = model.Salary;
+					vacancy.PhoneNumber = model.PhoneNumber;
+					vacancy.EMail = model.EMail;
+					vacancy.Description = model.Description;
+				}
+				await _context.SaveChangesAsync();
+			}
+			return (findUserResult, vacancy);
+		}
+
+		public async Task<(bool, bool)> DeleteVacansyAsync(ulong id, string name)
+		{
+			bool findUserResult;
+			bool findVacancyResult = false;
+			var employer = await _userManager.FindByNameAsync(name);
+			if (findUserResult = employer != null)
+			{
+				var vacancy = await _context.Vacancies.FindAsync(id);
+				if (findVacancyResult = vacancy != null)
+				{
+					_context.Vacancies.Remove(vacancy!);
+					await _context.SaveChangesAsync();
+				}
+			}
+			return (findUserResult, findVacancyResult);
+		}
 	}
 }
