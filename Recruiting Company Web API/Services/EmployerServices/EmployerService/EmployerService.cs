@@ -17,31 +17,58 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			_userManager = userManager;
 		}
 
-		public async Task<(bool, List<Vacancy>?)> GetVacanciesAsync(string name)
+		public async Task<(bool, IEnumerable<object>?)> GetVacanciesAsync(string name)
 		{
 			bool findUserResult;
-			List<Vacancy>? vacancies = null;
+			IEnumerable<object>? vacancies = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
+				//var vacancyEntities = await _context.Vacancies
+				//	.Include(v => v.Category)
+				//	.Where(v => v.Employer.Id == employer!.Id)
+				//	.ToListAsync();
+				//vacancies = vacancyEntities.Select(v => new
+				//{
+				//	v.Id,
+				//	CategoryID = v.Category.Id,
+				//	v.CreateDate,
+				//	v.Title,
+				//	v.Salary,
+				//	v.PhoneNumber,
+				//	v.EMail,
+				//	v.Description
+				//});
+
 				vacancies = await _context.Vacancies
 					.Include(v => v.Category)
 					.Where(v => v.Employer.Id == employer!.Id)
+					.Select(v => new
+					{
+						v.Id,
+						CategoryID = v.Category.Id,
+						v.CreateDate,
+						v.Title,
+						v.Salary,
+						v.PhoneNumber,
+						v.EMail,
+						v.Description
+					})
 					.ToListAsync();
 			}
 			return (findUserResult, vacancies);
 		}
 
-		public async Task<(bool, Vacancy?)> AddVacancyAsync(VacancyModel model, string name)
+		public async Task<(bool, object?)> AddVacancyAsync(VacancyModel model, string name)
 		{
 			bool findUserResult;
-			Vacancy? vacancy = null;
+			object? vacancy = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
 				var category = await _context.Categories.FindAsync(model.CategoryID)
 					?? throw new Exception("Category is null");
-				vacancy = new Vacancy
+				var vacancyEntity = new Vacancy
 				{
 					CreateDate = DateTime.Now,
 					Category = category,
@@ -53,39 +80,61 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					Description = model.Description,
 					Employer = employer!
 				};
-				await _context.Vacancies.AddAsync(vacancy);
+				await _context.Vacancies.AddAsync(vacancyEntity);
 				await _context.SaveChangesAsync();
+				vacancy = new
+				{
+					vacancyEntity.Id,
+					CategoryID = vacancyEntity.Category.Id,
+					vacancyEntity.CreateDate,
+					vacancyEntity.Title,
+					vacancyEntity.Salary,
+					vacancyEntity.PhoneNumber,
+					vacancyEntity.EMail,
+					vacancyEntity.Description
+				};
 			}
 			return (findUserResult, vacancy);
 		}
 
-		public async Task<(bool, Vacancy?)> EditVacansyAsync(VacancyModel model, string name)
+		public async Task<(bool, object?)> EditVacansyAsync(VacancyModel model, string name)
 		{
 			_ = model.Id ?? throw new Exception("Id is null");
 			bool findUserResult;
-			Vacancy? vacancy = null;
+			object? vacancy = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
 				var category = await _context.Categories.FindAsync(model.CategoryID)
 					?? throw new Exception("Category is null");
-				vacancy = await _context.Vacancies
+				var vacancyEntity = await _context.Vacancies
 					.Include(v => v.Category)
 					.Include(v => v.Employer)
 					.Where(v => v.Employer.Id == employer!.Id)
 					.Where(v => v.Id == model.Id)
 					.FirstOrDefaultAsync();
-				if (vacancy != null)
+				if (vacancyEntity != null)
 				{
-					vacancy.Title = model.Title;
-					vacancy.Location = model.Location;
-					vacancy.Category = category;
-					vacancy.Salary = model.Salary;
-					vacancy.PhoneNumber = model.PhoneNumber;
-					vacancy.EMail = model.EMail;
-					vacancy.Description = model.Description;
+					vacancyEntity.Title = model.Title;
+					vacancyEntity.Location = model.Location;
+					vacancyEntity.Category = category;
+					vacancyEntity.Salary = model.Salary;
+					vacancyEntity.PhoneNumber = model.PhoneNumber;
+					vacancyEntity.EMail = model.EMail;
+					vacancyEntity.Description = model.Description;
+					await _context.SaveChangesAsync();
+					vacancy = new
+					{
+						vacancyEntity.Id,
+						CategoryID = vacancyEntity.Category.Id,
+						vacancyEntity.CreateDate,
+						vacancyEntity.Title,
+						vacancyEntity.Salary,
+						vacancyEntity.PhoneNumber,
+						vacancyEntity.EMail,
+						vacancyEntity.Description
+					};
 				}
-				await _context.SaveChangesAsync();
 			}
 			return (findUserResult, vacancy);
 		}

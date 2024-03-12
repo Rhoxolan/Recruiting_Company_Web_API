@@ -29,8 +29,7 @@ namespace Recruiting_Company_Web_API.Controllers
 				{
 					return BadRequest();
 				}
-				return Ok(new { vacancies = vacancies.Select(v => new { v.Id, CategoryID = v.Category.Id, v.CreateDate,
-					v.Title, v.Salary, v.PhoneNumber, v.EMail, v.Description })});
+				return Ok(new { vacancies });
 			}
 			catch
 			{
@@ -49,8 +48,7 @@ namespace Recruiting_Company_Web_API.Controllers
 				{
 					return BadRequest();
 				}
-				return Ok(new { vacancy = new { vacancy.Id, CategoryID = vacancy.Category.Id, vacancy.CreateDate,
-					vacancy.Title, vacancy.Salary, vacancy.PhoneNumber, vacancy.EMail, vacancy.Description } });
+				return Ok(new { vacancy });
 			}
 			catch
 			{
@@ -73,8 +71,7 @@ namespace Recruiting_Company_Web_API.Controllers
 				{
 					return NotFound();
 				}
-				return Ok(new { vacancy = new { vacancy.Id, CategoryID = vacancy.Category.Id, vacancy.CreateDate,
-					vacancy.Title, vacancy.Salary, vacancy.PhoneNumber, vacancy.EMail, vacancy.Description } });
+				return Ok(new { vacancy });
 			}
 			catch
 			{
