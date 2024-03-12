@@ -61,6 +61,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 
 		public async Task<(bool, Vacancy?)> EditVacansyAsync(VacancyModel model, string name)
 		{
+			_ = model.Id ?? throw new Exception("Id is null");
 			bool findUserResult;
 			Vacancy? vacancy = null;
 			var employer = await _userManager.FindByNameAsync(name);
@@ -72,6 +73,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					.Include(v => v.Category)
 					.Include(v => v.Employer)
 					.Where(v => v.Employer.Id == employer!.Id)
+					.Where(v => v.Id == model.Id)
 					.FirstOrDefaultAsync();
 				if (vacancy != null)
 				{

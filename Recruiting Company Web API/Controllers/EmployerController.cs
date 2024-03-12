@@ -58,7 +58,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
-		[HttpPatch("EditVacansy")]
+		[HttpPatch("EditVacancy")]
 		public async Task<IActionResult> EditVacancy(VacancyModel model)
 		{
 			try
@@ -82,7 +82,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
-		[HttpDelete("DeleteVacancy")]
+		[HttpDelete("DeleteVacancy/{id}")]
 		public async Task<IActionResult> DeleteVacancy(ulong id)
 		{
 			try
