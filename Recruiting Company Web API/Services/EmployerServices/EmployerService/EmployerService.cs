@@ -139,5 +139,32 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			}
 			return (findUserResult, findVacancyResult);
 		}
+
+		public async Task<(bool, bool, IEnumerable<object>?)> GetVacancyResponses(ulong id, string name)
+		{
+			bool findUserResult;
+			bool findVacancyResult = false;
+			IEnumerable<object>? responses = null;
+			var employer = await _userManager.FindByNameAsync(name);
+			if (findUserResult = employer != null)
+			{
+				var vacancy = await _context.Vacancies.FindAsync(id);
+				if (findVacancyResult = vacancy != null)
+				{
+					responses = await _context.Responses
+						.Include(r => r.Vacancy)
+						.Include(r => r.CV)
+						.Where(r => r.Vacancy.Id == id)
+						.Select(r => new
+						{
+							r.Id,
+							r.ResponseTime
+							//...
+						})
+						.ToListAsync();
+				}
+			}
+			return (findUserResult, findVacancyResult, responses);
+		}
 	}
 }

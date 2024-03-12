@@ -9,5 +9,6 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 		Task<(bool findUserResult, bool findVacancyResult)> DeleteVacancyAsync(ulong id, string name);
 		Task<(bool findUserResult, object? vacancy)> EditVacansyAsync(VacancyModel model, string name);
 		Task<(bool findUserResult, IEnumerable<object>? vacancies)> GetVacanciesAsync(string name);
+		Task<(bool, bool, IEnumerable<object>?)> GetVacancyResponses(ulong id, string name);
 	}
 }
