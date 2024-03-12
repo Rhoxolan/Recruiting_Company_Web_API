@@ -154,6 +154,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					responses = await _context.Responses
 						.Include(r => r.Vacancy)
 						.Include(r => r.CV)
+						.Include(r => r.CV.Seeker)
 						.Where(r => r.Vacancy.Id == id)
 						.Select(r => new
 						{
