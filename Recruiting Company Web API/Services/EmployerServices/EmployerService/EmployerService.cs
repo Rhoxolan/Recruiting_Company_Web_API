@@ -24,22 +24,6 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
-				//var vacancyEntities = await _context.Vacancies
-				//	.Include(v => v.Category)
-				//	.Where(v => v.Employer.Id == employer!.Id)
-				//	.ToListAsync();
-				//vacancies = vacancyEntities.Select(v => new
-				//{
-				//	v.Id,
-				//	CategoryID = v.Category.Id,
-				//	v.CreateDate,
-				//	v.Title,
-				//	v.Salary,
-				//	v.PhoneNumber,
-				//	v.EMail,
-				//	v.Description
-				//});
-
 				vacancies = await _context.Vacancies
 					.Include(v => v.Category)
 					.Where(v => v.Employer.Id == employer!.Id)
