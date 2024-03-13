@@ -25,7 +25,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
 				var (findUserResult, vacancies) = await _employerService.GetVacanciesAsync(userNameClaim!.Value);
-				if(!findUserResult || vacancies == null)
+				if (!findUserResult || vacancies == null)
 				{
 					return BadRequest();
 				}
@@ -95,6 +95,53 @@ namespace Recruiting_Company_Web_API.Controllers
 					return NotFound();
 				}
 				return Ok();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
+		[HttpGet("Responses/{id}")]
+		public async Task<IActionResult> GetResponses(ulong id)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, findVacancyResult, responses) = await _employerService
+					.GetVacancyResponsesAsync(id, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (!findVacancyResult)
+				{
+					return NotFound();
+				}
+				return Ok(new { responses });
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
+		[HttpGet("ResponseCVFile/{id}")]
+		public async Task<IActionResult> GetResponseCVFile(ulong id)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, responseCVFile) = await _employerService.GetVacancyResponseCVFileAsync(id, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (responseCVFile == null)
+				{
+					return NotFound();
+				}
+				return Ok(new { responseCVFile });
 			}
 			catch
 			{

@@ -140,7 +140,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return (findUserResult, findVacancyResult);
 		}
 
-		public async Task<(bool, bool, IEnumerable<object>?)> GetVacancyResponses(ulong id, string name)
+		public async Task<(bool, bool, IEnumerable<object>?)> GetVacancyResponsesAsync(ulong id, string name)
 		{
 			bool findUserResult;
 			bool findVacancyResult = false;
@@ -153,19 +153,47 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 				{
 					responses = await _context.Responses
 						.Include(r => r.Vacancy)
+						.Include(r => r.Vacancy.Employer)
 						.Include(r => r.CV)
-						.Include(r => r.CV.Seeker)
 						.Where(r => r.Vacancy.Id == id)
+						.Where(r => r.Vacancy.Employer.Id == employer!.Id)
 						.Select(r => new
 						{
 							r.Id,
-							r.ResponseTime
-							//...
+							r.ResponseTime,
+							IsLink = r.CV.Link != null,
+							IsFile = r.CV.File != null,
+							r.CV.Link
 						})
 						.ToListAsync();
 				}
 			}
 			return (findUserResult, findVacancyResult, responses);
+		}
+
+		public async Task<(bool, object?)> GetVacancyResponseCVFileAsync(ulong id, string name)
+		{
+			bool findUserResult;
+			object? responseCVFile = null;
+			var employer = await _userManager.FindByNameAsync(name);
+			if (findUserResult = employer != null)
+			{
+				responseCVFile = await _context.Responses
+					.Include(r => r.Vacancy)
+					.Include(r => r.Vacancy.Employer)
+					.Include(r => r.CV)
+					.Where(r => r.Id == id)
+					.Where(r => r.Vacancy.Employer.Id == employer!.Id)
+					.Select(r => new
+					{
+						FileName = string.Format("CV_to_Vacansy_{0}",
+							r.Vacancy.Title.Length > 7 ? $"{r.Vacancy.Title.Substring(0, 7)}..._" : r.Vacancy.Title),
+						r.CV.FileFormat,
+						r.CV.File
+					})
+					.FirstOrDefaultAsync();
+			}
+			return (findUserResult, responseCVFile);
 		}
 	}
 }
