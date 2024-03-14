@@ -7,6 +7,7 @@ using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Filters;
 using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
+using Recruiting_Company_Web_API.Services.EmployerServices.EmployerService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +54,7 @@ builder.Services.AddEndpointsApiExplorer()
 	.AddSwaggerGen()
 	.AddTransient<IJWTService, JWTService>()
 	.AddTransient<IAccountService, AccountService>()
+	.AddTransient<IEmployerService, EmployerService>()
 	.AddScoped<ValidateModelFilterAttribute>();
 
 var app = builder.Build();
