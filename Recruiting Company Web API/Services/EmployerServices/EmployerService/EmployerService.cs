@@ -17,10 +17,10 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			_userManager = userManager;
 		}
 
-		public async Task<(bool, IEnumerable<object>?)> GetVacanciesAsync(string name)
+		public async Task<(bool, IEnumerable<dynamic>?)> GetVacanciesAsync(string name)
 		{
 			bool findUserResult;
-			IEnumerable<object>? vacancies = null;
+			IEnumerable<dynamic>? vacancies = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
@@ -43,10 +43,10 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return (findUserResult, vacancies);
 		}
 
-		public async Task<(bool, object?)> AddVacancyAsync(VacancyModel model, string name)
+		public async Task<(bool, dynamic?)> AddVacancyAsync(VacancyModel model, string name)
 		{
 			bool findUserResult;
-			object? vacancy = null;
+			dynamic? vacancy = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
@@ -81,11 +81,11 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return (findUserResult, vacancy);
 		}
 
-		public async Task<(bool, object?)> EditVacansyAsync(VacancyModel model, string name)
+		public async Task<(bool, dynamic?)> EditVacansyAsync(VacancyModel model, string name)
 		{
 			_ = model.Id ?? throw new Exception("Id is null");
 			bool findUserResult;
-			object? vacancy = null;
+			dynamic? vacancy = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
@@ -140,11 +140,11 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return (findUserResult, findVacancyResult);
 		}
 
-		public async Task<(bool, bool, IEnumerable<object>?)> GetVacancyResponsesAsync(ulong id, string name)
+		public async Task<(bool, bool, IEnumerable<dynamic>?)> GetVacancyResponsesAsync(ulong id, string name)
 		{
 			bool findUserResult;
 			bool findVacancyResult = false;
-			IEnumerable<object>? responses = null;
+			IEnumerable<dynamic>? responses = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
@@ -171,10 +171,10 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return (findUserResult, findVacancyResult, responses);
 		}
 
-		public async Task<(bool, object?)> GetVacancyResponseCVFileAsync(ulong id, string name)
+		public async Task<(bool, dynamic?)> GetVacancyResponseCVFileAsync(ulong id, string name)
 		{
 			bool findUserResult;
-			object? responseCVFile = null;
+			dynamic? responseCVFile = null;
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
