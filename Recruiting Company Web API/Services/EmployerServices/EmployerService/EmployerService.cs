@@ -33,6 +33,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 						CategoryID = v.Category.Id,
 						v.CreateDate,
 						v.Title,
+						v.Location,
 						v.Salary,
 						v.PhoneNumber,
 						v.EMail,
