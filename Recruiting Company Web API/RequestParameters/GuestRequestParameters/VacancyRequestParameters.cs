@@ -5,6 +5,7 @@ namespace Recruiting_Company_Web_API.RequestParameters.GuestRequestParameters
 	public class VacancyRequestParameters
 	{
 		[Required]
+		[Range(1, int.MaxValue)]
 		public int PageNumber { get; set; }
 
 		[Required]
@@ -12,5 +13,7 @@ namespace Recruiting_Company_Web_API.RequestParameters.GuestRequestParameters
 		public short Pagesize { get; set; }
 
 		public short? CategoryID { get; set; }
+
+		public string? EmployerID { get; set; }
 	}
 }

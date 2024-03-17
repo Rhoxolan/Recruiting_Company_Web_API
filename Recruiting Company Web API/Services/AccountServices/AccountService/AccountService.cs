@@ -57,7 +57,8 @@ namespace Recruiting_Company_Web_API.Services.AccountServices.AccountService
 			Employer user = new Employer
 			{
 				UserName = login,
-				CompanyName = companyName
+				CompanyName = companyName,
+				PublicId = Guid.NewGuid()
 			};
 			return (await _employerManager.CreateAsync(user, password), user);
 		}

@@ -10,25 +10,20 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 		private readonly ApplicationContext _context;
 
 		public GuestService(ApplicationContext context)
-		{
-			_context = context;
-		}
+			=> _context = context;
+
+		public async Task<int> GetVacanciesCountAsync(VacancyRequestParameters requestParameters)
+			=> await GetVacancies(requestParameters).CountAsync();
 
 		public async Task<IEnumerable<dynamic>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
-		{
-			var query = _context.Vacancies
-				.Include(v => v.Category)
-				.Include(v => v.Employer)
+			=> await GetVacancies(requestParameters)
 				.Skip((requestParameters.PageNumber - 1) * requestParameters.Pagesize)
-				.Take(requestParameters.Pagesize);
-
-			AddFilters(ref query, requestParameters);
-
-			return await query
+				.Take(requestParameters.Pagesize)
 				.Select(v => new
 				{
 					v.Id,
 					CategoryID = v.Category.Id,
+					EmployerID = v.Employer.PublicId,
 					Employer = v.Employer.CompanyName,
 					v.CreateDate,
 					v.Title,
@@ -39,19 +34,13 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 					v.Description
 				})
 				.ToListAsync();
-		}
 
-		private void AddFilters(ref IQueryable<Vacancy> query, VacancyRequestParameters requestParameters)
-		{
-			IQueryable<Vacancy> newQuery = query;
-
-			if (requestParameters.CategoryID != null)
-			{
-				newQuery = newQuery.Where(v => v.Category.Id == requestParameters.CategoryID);
-			}
-
-			query = newQuery;
-		}
+		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
+			=> _context.Vacancies
+				.Include(v => v.Category)
+				.Include(v => v.Employer)
+				.Where(v => requestParameters.CategoryID == null || v.Category.Id == requestParameters.CategoryID)
+				.Where(v => requestParameters.EmployerID == null || v.Employer.PublicId.ToString() == requestParameters.EmployerID);
 
 	}
 }
