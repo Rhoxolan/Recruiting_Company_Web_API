@@ -131,7 +131,11 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			var employer = await _userManager.FindByNameAsync(name);
 			if (findUserResult = employer != null)
 			{
-				var vacancy = await _context.Vacancies.FindAsync(id);
+				var vacancy = await _context.Vacancies
+					.Include(v => v.Employer)
+					.Where(v => v.Employer.Id == employer!.Id)
+					.Where(v => v.Id == id)
+					.FirstOrDefaultAsync();
 				if (findVacancyResult = vacancy != null)
 				{
 					_context.Vacancies.Remove(vacancy!);
