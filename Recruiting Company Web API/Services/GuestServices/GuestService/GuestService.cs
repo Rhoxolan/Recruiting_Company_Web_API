@@ -21,9 +21,11 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 
 		public async Task<IEnumerable<dynamic>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
 		{
+			_ = requestParameters.PageNumber ?? throw new Exception("Page number is null");
+			_ = requestParameters.Pagesize ?? throw new Exception("Page size is null");
 			return await GetVacancies(requestParameters)
-						.Skip((requestParameters.PageNumber - 1) * requestParameters.Pagesize)
-						.Take(requestParameters.Pagesize)
+						.Skip((requestParameters.PageNumber.Value - 1) * requestParameters.Pagesize.Value)
+						.Take(requestParameters.Pagesize.Value)
 						.OrderBy(v => v.CreateDate)
 						.Select(v => new
 						{
