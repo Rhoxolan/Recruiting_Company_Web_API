@@ -24,24 +24,24 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 			_ = requestParameters.PageNumber ?? throw new Exception("Page number is null");
 			_ = requestParameters.Pagesize ?? throw new Exception("Page size is null");
 			return await GetVacancies(requestParameters)
-						.Skip((requestParameters.PageNumber.Value - 1) * requestParameters.Pagesize.Value)
-						.Take(requestParameters.Pagesize.Value)
-						.OrderBy(v => v.CreateDate)
-						.Select(v => new
-						{
-							v.Id,
-							CategoryID = v.Category.Id,
-							EmployerID = v.Employer.PublicId,
-							Employer = v.Employer.CompanyName,
-							v.CreateDate,
-							v.Title,
-							v.Location,
-							v.Salary,
-							v.PhoneNumber,
-							v.EMail,
-							v.Description
-						})
-						.ToListAsync();
+				.OrderBy(v => v.CreateDate)
+				.Skip((requestParameters.PageNumber.Value - 1) * requestParameters.Pagesize.Value)
+				.Take(requestParameters.Pagesize.Value)
+				.Select(v => new
+				{
+					v.Id,
+					CategoryID = v.Category.Id,
+					EmployerID = v.Employer.PublicId,
+					Employer = v.Employer.CompanyName,
+					v.CreateDate,
+					v.Title,
+					v.Location,
+					v.Salary,
+					v.PhoneNumber,
+					v.EMail,
+					v.Description
+				})
+				.ToListAsync();
 		}
 
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
