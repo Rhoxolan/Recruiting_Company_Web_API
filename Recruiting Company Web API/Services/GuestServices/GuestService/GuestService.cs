@@ -40,17 +40,14 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 					v.PhoneNumber,
 					v.EMail,
 					v.Description
-				})
-				.ToListAsync();
+				}).ToListAsync();
 		}
 
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
 		{
 			return _context.Vacancies
-						.Include(v => v.Category)
-						.Include(v => v.Employer)
-						.Where(v => requestParameters.CategoryID == null || v.Category.Id == requestParameters.CategoryID)
-						.Where(v => requestParameters.EmployerID == null || v.Employer.PublicId.ToString() == requestParameters.EmployerID);
+				.Where(v => requestParameters.CategoryID == null || v.Category.Id == requestParameters.CategoryID)
+				.Where(v => requestParameters.EmployerID == null || v.Employer.PublicId.ToString() == requestParameters.EmployerID);
 		}
 	}
 }

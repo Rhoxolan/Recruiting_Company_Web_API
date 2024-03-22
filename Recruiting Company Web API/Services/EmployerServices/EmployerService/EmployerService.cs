@@ -25,7 +25,6 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			if (findUserResult = employer != null)
 			{
 				vacancies = await _context.Vacancies
-					.Include(v => v.Category)
 					.Where(v => v.Employer.Id == employer!.Id)
 					.Select(v => new
 					{
@@ -38,8 +37,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 						v.PhoneNumber,
 						v.EMail,
 						v.Description
-					})
-					.ToListAsync();
+					}).ToListAsync();
 			}
 			return (findUserResult, vacancies);
 		}
@@ -93,11 +91,8 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 				var category = await _context.Categories.FindAsync(model.CategoryID)
 					?? throw new Exception("Category is null");
 				var vacancyEntity = await _context.Vacancies
-					.Include(v => v.Category)
-					.Include(v => v.Employer)
 					.Where(v => v.Employer.Id == employer!.Id)
-					.Where(v => v.Id == model.Id)
-					.FirstOrDefaultAsync();
+					.Where(v => v.Id == model.Id).FirstOrDefaultAsync();
 				if (vacancyEntity != null)
 				{
 					vacancyEntity.Title = model.Title;
@@ -132,10 +127,8 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			if (findUserResult = employer != null)
 			{
 				var vacancy = await _context.Vacancies
-					.Include(v => v.Employer)
 					.Where(v => v.Employer.Id == employer!.Id)
-					.Where(v => v.Id == id)
-					.FirstOrDefaultAsync();
+					.Where(v => v.Id == id).FirstOrDefaultAsync();
 				if (findVacancyResult = vacancy != null)
 				{
 					_context.Vacancies.Remove(vacancy!);
@@ -154,17 +147,12 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			if (findUserResult = employer != null)
 			{
 				var vacancy = await _context.Vacancies
-					.Include(v => v.Employer)
 					.Where(v => v.Employer.Id == employer!.Id)
-					.Where(v => v.Id == id)
-					.FirstOrDefaultAsync();
+					.Where(v => v.Id == id).FirstOrDefaultAsync();
 				if (findVacancyResult = vacancy != null)
 				{
 					responses = await _context.Responses
-						.Include(r => r.Vacancy)
-						.Include(r => r.Vacancy.Employer)
-						.Include(r => r.CV)
-						.Where(r => r.Vacancy.Id == id)
+						.Where(r => r.Vacancy.Id == vacancy!.Id)
 						.Where(r => r.Vacancy.Employer.Id == employer!.Id)
 						.Select(r => new
 						{
@@ -173,8 +161,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 							IsLink = r.CV.Link != null,
 							IsFile = r.CV.File != null,
 							r.CV.Link
-						})
-						.ToListAsync();
+						}).ToListAsync();
 				}
 			}
 			return (findUserResult, findVacancyResult, responses);
@@ -188,9 +175,6 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			if (findUserResult = employer != null)
 			{
 				responseCVFile = await _context.Responses
-					.Include(r => r.Vacancy)
-					.Include(r => r.Vacancy.Employer)
-					.Include(r => r.CV)
 					.Where(r => r.Id == id)
 					.Where(r => r.Vacancy.Employer.Id == employer!.Id)
 					.Select(r => new
@@ -199,8 +183,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 							r.Vacancy.Title.Length > 7 ? $"{r.Vacancy.Title.Substring(0, 7)}..._" : r.Vacancy.Title),
 						r.CV.FileFormat,
 						r.CV.File
-					})
-					.FirstOrDefaultAsync();
+					}).FirstOrDefaultAsync();
 			}
 			return (findUserResult, responseCVFile);
 		}
