@@ -28,7 +28,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					.Select(v => new
 					{
 						v.Id,
-						CategoryID = v.Category.Id,
+						v.CategoryID,
 						v.CreateDate,
 						v.Title,
 						v.Location,
@@ -95,6 +95,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					vacancyEntity.Title = model.Title;
 					vacancyEntity.Location = model.Location;
 					vacancyEntity.Category = category;
+					vacancyEntity.CategoryID = category.Id;
 					vacancyEntity.Salary = model.Salary;
 					vacancyEntity.PhoneNumber = model.PhoneNumber;
 					vacancyEntity.EMail = model.EMail;
@@ -103,7 +104,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					vacancy = new
 					{
 						vacancyEntity.Id,
-						CategoryID = vacancyEntity.Category.Id,
+						vacancyEntity.CategoryID,
 						vacancyEntity.CreateDate,
 						vacancyEntity.Title,
 						vacancyEntity.Salary,
@@ -180,14 +181,14 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 		private IQueryable<Vacancy> GetVacancies(string userID, ulong? id = null)
 		{
 			return _context.Vacancies
-				.Where(v => v.Employer.Id == userID)
+				.Where(v => v.EmployerID == userID)
 				.Where(v => id == null || v.Id == id);
 		}
 
 		private IQueryable<Response> GetResponses(string userID, ulong? id = null, ulong? vacancyId = null)
 		{
 			return _context.Responses
-				.Where(r => r.Vacancy.Employer.Id == userID)
+				.Where(r => r.Vacancy.EmployerID == userID)
 				.Where(r => id == null || r.Id == id)
 				.Where(r => vacancyId == null || r.Vacancy.Id == vacancyId);
 		}

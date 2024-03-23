@@ -8,6 +8,10 @@
 
 		public required Vacancy Vacancy { get; set; }
 
+		public ulong? VacansyID { get; set; }
+
 		public required CV CV { get; set; }
+
+		public ulong? CVID {  get; set; }
 	}
 }

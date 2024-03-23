@@ -30,7 +30,7 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 				.Select(v => new
 				{
 					v.Id,
-					CategoryID = v.Category.Id,
+					v.CategoryID,
 					EmployerID = v.Employer.PublicId,
 					Employer = v.Employer.CompanyName,
 					v.CreateDate,
@@ -46,7 +46,7 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
 		{
 			return _context.Vacancies
-				.Where(v => requestParameters.CategoryID == null || v.Category.Id == requestParameters.CategoryID)
+				.Where(v => requestParameters.CategoryID == null || v.CategoryID == requestParameters.CategoryID)
 				.Where(v => requestParameters.EmployerID == null || v.Employer.PublicId.ToString() == requestParameters.EmployerID);
 		}
 	}
