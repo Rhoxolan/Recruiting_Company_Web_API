@@ -28,7 +28,11 @@ namespace Recruiting_Company_Web_API.Entities
 
 		public required Category Category { get; set; }
 
+		public short? CategoryID { get; set; }
+
 		public required Employer Employer { get; set; }
+
+		public string? EmployerID { get; set; }
 
 	}
 }

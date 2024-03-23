@@ -8,6 +8,8 @@ namespace Recruiting_Company_Web_API.Entities
 		[MaxLength(50)]
 		public required string CompanyName { get; set; }
 
+		public required Guid PublicId { get; set; }
+
 		public ICollection<Vacancy> Vacancies { get; set; } = default!;
 	}
 }

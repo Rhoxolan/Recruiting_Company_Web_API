@@ -18,5 +18,7 @@ namespace Recruiting_Company_Web_API.Entities
 		public string? Link { get; init; }
 
 		public required Seeker Seeker { get; init; }
+
+		public string? SeekerID { get; init; }
 	}
 }

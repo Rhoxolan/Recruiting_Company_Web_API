@@ -4,10 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.Entities;
-using Recruiting_Company_Web_API.Filters;
 using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
 using Recruiting_Company_Web_API.Services.EmployerServices.EmployerService;
+using Recruiting_Company_Web_API.Services.GuestServices.GuestService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +55,7 @@ builder.Services.AddEndpointsApiExplorer()
 	.AddTransient<IJWTService, JWTService>()
 	.AddTransient<IAccountService, AccountService>()
 	.AddTransient<IEmployerService, EmployerService>()
-	.AddScoped<ValidateModelFilterAttribute>();
+	.AddTransient<IGuestService, GuestService>();
 
 var app = builder.Build();
 
