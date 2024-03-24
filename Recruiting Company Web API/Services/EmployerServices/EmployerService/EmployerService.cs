@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.EmployerModels;
-using System.Text;
 
 namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 {

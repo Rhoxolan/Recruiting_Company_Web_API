@@ -8,6 +8,7 @@ using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
 using Recruiting_Company_Web_API.Services.EmployerServices.EmployerService;
 using Recruiting_Company_Web_API.Services.GuestServices.GuestService;
+using Recruiting_Company_Web_API.Services.SeekerServices.SeekerService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,7 +56,8 @@ builder.Services.AddEndpointsApiExplorer()
 	.AddTransient<IJWTService, JWTService>()
 	.AddTransient<IAccountService, AccountService>()
 	.AddTransient<IEmployerService, EmployerService>()
-	.AddTransient<IGuestService, GuestService>();
+	.AddTransient<IGuestService, GuestService>()
+	.AddTransient<ISeekerService, SeekerService>();
 
 var app = builder.Build();
 
