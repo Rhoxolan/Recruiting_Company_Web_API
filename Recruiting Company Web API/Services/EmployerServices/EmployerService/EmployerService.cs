@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.EmployerModels;
+using System.Text;
 
 namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 {
@@ -172,7 +173,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 						FileName = string.Format("CV_to_Vacansy_{0}",
 							r.Vacancy.Title.Length > 7 ? $"{r.Vacancy.Title.Substring(0, 7)}..._" : r.Vacancy.Title),
 						r.CV.FileFormat,
-						r.CV.File
+						File = r.CV.File != null ? Convert.ToBase64String(r.CV.File) : null
 					}).FirstOrDefaultAsync();
 			}
 			return (findUserResult, responseCVFile);
