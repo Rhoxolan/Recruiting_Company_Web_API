@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Recruiting_Company_Web_API.Services.SeekerServices.SeekerService;
 
 namespace Recruiting_Company_Web_API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
+	[Authorize]
 	public class SeekerController : ControllerBase
 	{
 		private readonly ISeekerService _seekerService;
