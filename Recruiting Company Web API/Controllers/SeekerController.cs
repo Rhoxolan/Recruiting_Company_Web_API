@@ -18,6 +18,21 @@ namespace Recruiting_Company_Web_API.Controllers
 			_seekerService = seekerService;
 		}
 
+		[HttpGet("GetCVs")]
+		public async Task<IActionResult> GetCVs()
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+
+				throw new NotImplementedException();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+		
 		[HttpPost("AddCV")]
 		public async Task<IActionResult> UploadCV(CVModel model)
 		{

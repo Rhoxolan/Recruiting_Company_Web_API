@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.SeekerModels;
@@ -16,6 +17,25 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			_context = context;
 		}
 
+		public async Task<(bool, IEnumerable<dynamic>?)> GetCVsAsync(string name)
+		{
+			bool findUserResult;
+			IEnumerable<dynamic>? cvs = null;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				cvs = await _context.CVs
+					.Where(c => c.SeekerID == seeker!.Id)
+					.Select(c => new
+					{
+						c.Id,
+						c.UploadDate,
+						//...
+					}).ToListAsync();
+			}
+			return (findUserResult, cvs);
+		}
+
 		public async Task<(bool, bool, dynamic?)> UploadCVAsync(CVModel model, string name)
 		{
 			bool modelValidResult;
@@ -25,7 +45,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			{
 				(findUserResult, cv) = await UploadCVAsync_Internal(model, name, UploadCVAsFileAsync);
 			}
-			if (modelValidResult = model.File == null && model.Link != null)
+			else if (modelValidResult = model.File == null && model.Link != null)
 			{
 				(findUserResult, cv) = await UploadCVAsync_Internal(model, name, UploadCVAsLinkAsync);
 			}
