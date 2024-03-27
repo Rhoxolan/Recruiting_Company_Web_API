@@ -110,5 +110,29 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 				IsLink = true
 			};
 		}
+
+		public async Task<(bool, bool)> AddVacansyToTabAsync(ulong id, string name)
+		{
+			bool findUserResult;
+			bool findVacancyResult = false;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				var vacancy = await _context.Vacancies.FindAsync(id);
+				if (findVacancyResult = vacancy != null)
+				{
+					var tab = new SeekerTab
+					{
+						Seeker = seeker!,
+						SeekerID = seeker!.Id,
+						Vacancy = vacancy!,
+						VacansyID = vacancy!.Id
+					};
+					await _context.SeekersTabs.AddAsync(tab);
+					await _context.SaveChangesAsync();
+				}
+			}
+			return (findUserResult, findVacancyResult);
+		}
 	}
 }

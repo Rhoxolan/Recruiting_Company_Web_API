@@ -55,5 +55,28 @@ namespace Recruiting_Company_Web_API.Controllers
 				return Problem("Error. Please contact to developer");
 			}
 		}
+
+		[HttpPost("AddTab")]
+		public async Task<IActionResult> AddVacansyToTab(ulong id)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, findVacancyResult) = await _seekerService.AddVacansyToTabAsync(id, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (!findVacancyResult)
+				{
+					return NotFound();
+				}
+				return Ok();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
 	}
 }

@@ -14,6 +14,7 @@ namespace Recruiting_Company_Web_API.Contexts
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<CV> CVs { get; set; }
 		public DbSet<Response> Responses { get; set; }
+		public DbSet<SeekerTab> SeekersTabs { get; set; }
 
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
 		{
