@@ -30,7 +30,11 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 					{
 						c.Id,
 						c.UploadDate,
-						//...
+						File = c.File != null ? Convert.ToBase64String(c.File) : null,
+						Format = c.File != null ? c.FileFormat : null,
+						IsFile = c.File != null,
+						IsLink = c.Link != null,
+						Link = c.Link ?? null
 					}).ToListAsync();
 			}
 			return (findUserResult, cvs);

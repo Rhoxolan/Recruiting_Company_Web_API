@@ -24,8 +24,12 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-
-				throw new NotImplementedException();
+				var (findUserResult, cvs) = await _seekerService.GetCVsAsync(userNameClaim!.Value);
+				if (!findUserResult || cvs == null)
+				{
+					return BadRequest();
+				}
+				return Ok(new { cvs });
 			}
 			catch
 			{
