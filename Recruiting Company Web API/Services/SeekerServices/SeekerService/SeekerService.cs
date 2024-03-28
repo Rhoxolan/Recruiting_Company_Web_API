@@ -126,7 +126,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 						Seeker = seeker!,
 						SeekerID = seeker!.Id,
 						Vacancy = vacancy!,
-						VacansyID = vacancy!.Id
+						VacancyID = vacancy!.Id
 					};
 					await _context.SeekersTabs.AddAsync(tab);
 					await _context.SaveChangesAsync();

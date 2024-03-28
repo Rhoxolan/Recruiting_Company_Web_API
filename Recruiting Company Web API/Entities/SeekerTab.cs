@@ -10,6 +10,6 @@
 
 		public required Vacancy Vacancy { get; set; }
 
-		public ulong? VacansyID { get; set; }
+		public ulong? VacancyID { get; set; }
 	}
 }
