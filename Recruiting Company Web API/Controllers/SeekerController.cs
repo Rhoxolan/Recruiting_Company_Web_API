@@ -36,7 +36,7 @@ namespace Recruiting_Company_Web_API.Controllers
 				return Problem("Error. Please contact to developer");
 			}
 		}
-		
+
 		[HttpPost("AddCV")]
 		public async Task<IActionResult> UploadCV(CVModel model)
 		{
@@ -44,7 +44,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
 				var (modelValidResult, findUserResult, cv) = await _seekerService.UploadCVAsync(model, userNameClaim!.Value);
-				if(!modelValidResult || !findUserResult || cv == null)
+				if (!modelValidResult || !findUserResult || cv == null)
 				{
 					return BadRequest();
 				}
@@ -56,13 +56,28 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
-		[HttpPost("AddTab")]
-		public async Task<IActionResult> AddVacansyToTab(ulong id)
+		[HttpGet("GetTabs")]
+		public async Task<IActionResult> GetTabs()
 		{
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findVacancyResult) = await _seekerService.AddVacansyToTabAsync(id, userNameClaim!.Value);
+
+				throw new NotImplementedException();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
+		[HttpPost("AddTab")]
+		public async Task<IActionResult> AddVacansyToTab(TabModel model)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, findVacancyResult) = await _seekerService.AddVacansyToTabAsync(model, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();

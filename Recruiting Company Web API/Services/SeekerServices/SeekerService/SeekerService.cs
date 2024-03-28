@@ -111,14 +111,14 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			};
 		}
 
-		public async Task<(bool, bool)> AddVacansyToTabAsync(ulong id, string name)
+		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)
 		{
 			bool findUserResult;
 			bool findVacancyResult = false;
 			var seeker = await _userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				var vacancy = await _context.Vacancies.FindAsync(id);
+				var vacancy = await _context.Vacancies.FindAsync(model.VacancyId);
 				if (findVacancyResult = vacancy != null)
 				{
 					var tab = new SeekerTab
