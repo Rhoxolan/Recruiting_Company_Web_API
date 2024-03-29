@@ -24,6 +24,7 @@ namespace Recruiting_Company_Web_API.Contexts
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			builder.Entity<Category>().HasData(InitCategories());
+			builder.Entity<SeekerTab>().HasIndex("SeekerID", "VacancyID").IsUnique();
 			base.OnModelCreating(builder);
 		}
 		
