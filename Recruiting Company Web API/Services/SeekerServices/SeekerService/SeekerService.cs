@@ -40,6 +40,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			return (findUserResult, cvs);
 		}
 
+		#region UploadCV
+
 		public async Task<(bool, bool, dynamic?)> UploadCVAsync(CVModel model, string name)
 		{
 			bool modelValidResult;
@@ -111,6 +113,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			};
 		}
 
+		#endregion UploadCV
+
 		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)
 		{
 			bool findUserResult;
@@ -133,6 +137,57 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 				}
 			}
 			return (findUserResult, findVacancyResult);
+		}
+
+		public async Task<(bool, IEnumerable<dynamic>?)> GetTabsAsync(string name)
+		{
+			bool findUserResult;
+			IEnumerable<dynamic>? tabs = null;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				tabs = await _context.SeekersTabs
+					.Where(t => t.SeekerID == seeker!.Id)
+					.OrderBy(t => t.Vacancy.CreateDate)
+					.Select(t => new
+					{
+						t.Vacancy.Id,
+						t.Vacancy.CategoryID,
+						EmployerID = t.Vacancy.Employer.PublicId,
+						Employer = t.Vacancy.Employer.CompanyName,
+						t.Vacancy.CreateDate,
+						t.Vacancy.Title,
+						t.Vacancy.Location,
+						t.Vacancy.Salary,
+						t.Vacancy.PhoneNumber,
+						t.Vacancy.EMail,
+						t.Vacancy.Description
+					}).ToListAsync();
+			}
+			return (findUserResult, tabs);
+		}
+
+		public async Task<(bool, bool, bool)> DeleteTabAsync(ulong id, string name)
+		{
+			bool findUserResult;
+			bool findVacancyResult = false;
+			bool findTabResult = false;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				var vacancy = await _context.Vacancies.FindAsync(id);
+				if (findVacancyResult = vacancy != null)
+				{
+					var tab = await _context.SeekersTabs
+						.Where(t => t.VacancyID == vacancy!.Id).FirstOrDefaultAsync();
+					if (findTabResult = tab != null)
+					{
+						_context.SeekersTabs.Remove(tab!);
+						await _context.SaveChangesAsync();
+					}
+				}
+			}
+			return (findUserResult, findVacancyResult, findTabResult);
 		}
 	}
 }

@@ -62,8 +62,12 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-
-				throw new NotImplementedException();
+				var (findUserResult, tabs) = await _seekerService.GetTabsAsync(userNameClaim!.Value);
+				if (!findUserResult || tabs == null)
+				{
+					return BadRequest();
+				}
+				return Ok(new { tabs });
 			}
 			catch
 			{
@@ -83,6 +87,29 @@ namespace Recruiting_Company_Web_API.Controllers
 					return BadRequest();
 				}
 				if (!findVacancyResult)
+				{
+					return NotFound();
+				}
+				return Ok();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
+		[HttpDelete("DeleteTab")]
+		public async Task<IActionResult> DeleteTab(ulong vacancyId)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, findVacancyResult, findTabResult) = await _seekerService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (!findVacancyResult || !findTabResult)
 				{
 					return NotFound();
 				}
