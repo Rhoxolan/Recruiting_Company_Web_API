@@ -4,6 +4,6 @@
 	{
 		public ulong VacancyId { get; set; }
 
-		public ulong CVID { get; set; }
+		public ulong CVId { get; set; }
 	}
 }
