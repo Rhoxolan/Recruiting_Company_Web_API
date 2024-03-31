@@ -120,8 +120,44 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			bool findUserResult;
 			bool findVacancyResult = false;
 			bool findCVResult = false;
-
-			throw new NotImplementedException();
+			dynamic? response = null;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				var vacancy = await _context.Vacancies.FindAsync(model.VacancyId);
+				if (findVacancyResult = vacancy != null)
+				{
+					var cv = await _context.CVs
+						.Where(c => c.SeekerID == seeker!.Id)
+						.Where(c => c.Id == model.CVId)
+						.FirstOrDefaultAsync();
+					if (findCVResult = cv != null)
+					{
+						var responseEntity = new Response
+						{
+							ResponseTime = DateTime.Now,
+							Vacancy = vacancy!,
+							CV = cv!
+						};
+						await _context.Responses.AddAsync(responseEntity);
+						await _context.SaveChangesAsync();
+						response = new
+						{
+							responseEntity.Id,
+							responseEntity.ResponseTime,
+							responseEntity.VacancyID,
+							CVId = cv!.Id,
+							CVUploadDate = cv.UploadDate,
+							File = cv.File != null ? Convert.ToBase64String(cv.File) : null,
+							Format = cv.File != null ? cv.FileFormat : null,
+							IsFile = cv.File != null,
+							IsLink = cv.Link != null,
+							Link = cv.Link ?? null
+						};
+					}
+				}
+			}
+			return (findUserResult, findVacancyResult, findCVResult, response);
 		}
 
 		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)

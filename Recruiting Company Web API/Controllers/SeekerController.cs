@@ -62,7 +62,21 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				throw new NotImplementedException();
+				var (findUserResult, findVacancyResult, findCVResult, response)
+					= await _seekerService.RespondToVacancyAsync(model, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (!findVacancyResult || !findCVResult)
+				{
+					return NotFound();
+				}
+				if (response == null)
+				{
+					return BadRequest();
+				}
+				return Ok(new { response });
 			}
 			catch
 			{
@@ -118,7 +132,8 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findVacancyResult, findTabResult) = await _seekerService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
+				var (findUserResult, findVacancyResult, findTabResult)
+					= await _seekerService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();
