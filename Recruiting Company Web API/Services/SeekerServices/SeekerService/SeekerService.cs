@@ -179,6 +179,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 				if (findVacancyResult = vacancy != null)
 				{
 					var tab = await _context.SeekersTabs
+						.Where(t => t.SeekerID == seeker!.Id)
 						.Where(t => t.VacancyID == vacancy!.Id).FirstOrDefaultAsync();
 					if (findTabResult = tab != null)
 					{

@@ -98,7 +98,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
-		[HttpDelete("DeleteTab")]
+		[HttpDelete("DeleteTab/{vacancyId}")]
 		public async Task<IActionResult> DeleteTab(ulong vacancyId)
 		{
 			try
