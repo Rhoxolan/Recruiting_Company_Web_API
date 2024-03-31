@@ -14,6 +14,26 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 			_context = context;
 		}
 
+		public async Task<dynamic?> GetVacancyAsync(ulong id)
+		{
+			return await _context.Vacancies
+				.Where(v => v.Id == id)
+				.Select(v => new
+				{
+					v.Id,
+					v.CategoryID,
+					EmployerID = v.Employer.PublicId,
+					Employer = v.Employer.CompanyName,
+					v.CreateDate,
+					v.Title,
+					v.Location,
+					v.Salary,
+					v.PhoneNumber,
+					v.EMail,
+					v.Description
+				}).FirstOrDefaultAsync();
+		}
+
 		public async Task<int> GetVacanciesCountAsync(VacancyRequestParameters requestParameters)
 		{
 			return await GetVacancies(requestParameters).CountAsync();
