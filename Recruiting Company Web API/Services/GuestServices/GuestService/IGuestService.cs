@@ -6,5 +6,6 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 	{
 		Task<IEnumerable<dynamic>> GetVacanciesAsync(VacancyRequestParameters requestParameters);
 		Task<int> GetVacanciesCountAsync(VacancyRequestParameters requestParameters);
+		Task<dynamic?> GetVacancyAsync(ulong id);
 	}
 }
