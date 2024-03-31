@@ -56,6 +56,20 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
+		[HttpPost("VacancyResponding")]
+		public async Task<IActionResult> RespondToVacancy(ResponseModel model)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				throw new NotImplementedException();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
 		[HttpGet("GetTabs")]
 		public async Task<IActionResult> GetTabs()
 		{

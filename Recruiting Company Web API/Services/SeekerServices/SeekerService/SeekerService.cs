@@ -115,6 +115,15 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 
 		#endregion UploadCV
 
+		public async Task<(bool, bool, bool, dynamic?)> RespondToVacancyAsync(ResponseModel model, string name)
+		{
+			bool findUserResult;
+			bool findVacancyResult = false;
+			bool findCVResult = false;
+
+			throw new NotImplementedException();
+		}
+
 		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)
 		{
 			bool findUserResult;
