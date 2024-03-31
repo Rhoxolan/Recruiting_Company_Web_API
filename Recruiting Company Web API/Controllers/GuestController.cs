@@ -15,8 +15,26 @@ namespace Recruiting_Company_Web_API.Controllers
 			_guestService = guestService;
 		}
 
+		[HttpGet("Vacancy/{id}")]
+		public async Task<IActionResult> GetVacancy(ulong id)
+		{
+			try
+			{
+				var vacancy = await _guestService.GetVacancyAsync(id);
+				if (vacancy == null)
+				{
+					return NotFound();
+				}
+				return Ok(new { vacancy });
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
 		[HttpGet("VacanciesCount")]
-		public async Task<IActionResult> GetVacanciesCount([FromQuery]VacancyRequestParameters requestParameters)
+		public async Task<IActionResult> GetVacanciesCount([FromQuery] VacancyRequestParameters requestParameters)
 		{
 			try
 			{
@@ -30,7 +48,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		}
 
 		[HttpGet("Vacancies")]
-		public async Task<IActionResult> GetVacancies([FromQuery]VacancyRequestParameters requestParameters)
+		public async Task<IActionResult> GetVacancies([FromQuery] VacancyRequestParameters requestParameters)
 		{
 			try
 			{
