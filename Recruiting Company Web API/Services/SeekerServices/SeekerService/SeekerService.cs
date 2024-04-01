@@ -17,6 +17,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			_context = context;
 		}
 
+		#region CV
+
 		public async Task<(bool, IEnumerable<dynamic>?)> GetCVsAsync(string name)
 		{
 			bool findUserResult;
@@ -113,7 +115,30 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			};
 		}
 
-		#endregion UploadCV
+		#endregion
+
+		public async Task<(bool, bool)> DeleteCVAsync(ulong id, string name)
+		{
+			bool findUserResult;
+			bool findCVResult = false;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				var cv = await _context.CVs
+					.Where(c => c.SeekerID == seeker!.Id)
+					.Where(c => c.Id == id).FirstOrDefaultAsync();
+				if (findCVResult = cv != null)
+				{
+					_context.CVs.Remove(cv!);
+					await _context.SaveChangesAsync();
+				}
+			}
+			return (findUserResult, findCVResult);
+		}
+
+		#endregion
+
+		#region Response
 
 		public async Task<(bool, bool, bool, dynamic?)> RespondToVacancyAsync(ResponseModel model, string name)
 		{
@@ -159,6 +184,10 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			}
 			return (findUserResult, findVacancyResult, findCVResult, response);
 		}
+
+		#endregion
+
+		#region Tabs
 
 		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)
 		{
@@ -235,5 +264,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			}
 			return (findUserResult, findVacancyResult, findTabResult);
 		}
+
+		#endregion
 	}
 }

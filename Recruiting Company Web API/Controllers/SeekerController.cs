@@ -56,6 +56,29 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
+		[HttpDelete("DeleteCV/{id}")]
+		public async Task<IActionResult> DeleteCV(ulong id)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, findCVResult) = await _seekerService.DeleteCVAsync(id, userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				if (!findCVResult)
+				{
+					return NotFound();
+				}
+				return Ok();
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
 		[HttpPost("VacancyResponding")]
 		public async Task<IActionResult> RespondToVacancy(ResponseModel model)
 		{
