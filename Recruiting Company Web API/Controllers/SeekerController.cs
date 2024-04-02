@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Recruiting_Company_Web_API.Models.SeekerModels;
-using Recruiting_Company_Web_API.Services.SeekerServices.SeekerService;
+using Recruiting_Company_Web_API.Services.SeekerServices.CVService;
+using Recruiting_Company_Web_API.Services.SeekerServices.ResponseService;
+using Recruiting_Company_Web_API.Services.SeekerServices.TabsService;
 using System.Security.Claims;
 
 namespace Recruiting_Company_Web_API.Controllers
@@ -11,11 +13,15 @@ namespace Recruiting_Company_Web_API.Controllers
 	[Authorize]
 	public class SeekerController : ControllerBase
 	{
-		private readonly ISeekerService _seekerService;
+		private readonly ICVService _cvService;
+		private readonly IResponseService _responseService;
+		private readonly ITabsService _tabsService;
 
-		public SeekerController(ISeekerService seekerService)
+		public SeekerController(ICVService cvService, IResponseService responseService, ITabsService tabsService)
 		{
-			_seekerService = seekerService;
+			_cvService = cvService;
+			_responseService = responseService;
+			_tabsService = tabsService;
 		}
 
 		[HttpGet("GetCVs")]
@@ -24,7 +30,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, cvs) = await _seekerService.GetCVsAsync(userNameClaim!.Value);
+				var (findUserResult, cvs) = await _cvService.GetCVsAsync(userNameClaim!.Value);
 				if (!findUserResult || cvs == null)
 				{
 					return BadRequest();
@@ -43,7 +49,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (modelValidResult, findUserResult, cv) = await _seekerService.UploadCVAsync(model, userNameClaim!.Value);
+				var (modelValidResult, findUserResult, cv) = await _cvService.UploadCVAsync(model, userNameClaim!.Value);
 				if (!modelValidResult || !findUserResult || cv == null)
 				{
 					return BadRequest();
@@ -62,7 +68,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findCVResult) = await _seekerService.DeleteCVAsync(id, userNameClaim!.Value);
+				var (findUserResult, findCVResult) = await _cvService.DeleteCVAsync(id, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();
@@ -86,7 +92,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
 				var (findUserResult, findVacancyResult, findCVResult, response)
-					= await _seekerService.RespondToVacancyAsync(model, userNameClaim!.Value);
+					= await _responseService.RespondToVacancyAsync(model, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();
@@ -113,7 +119,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, responses) = await _seekerService.GetResponsesAsync(userNameClaim!.Value);
+				var (findUserResult, responses) = await _responseService.GetResponsesAsync(userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();
@@ -132,7 +138,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, tabs) = await _seekerService.GetTabsAsync(userNameClaim!.Value);
+				var (findUserResult, tabs) = await _tabsService.GetTabsAsync(userNameClaim!.Value);
 				if (!findUserResult || tabs == null)
 				{
 					return BadRequest();
@@ -151,7 +157,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			try
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findVacancyResult) = await _seekerService.AddVacansyToTabAsync(model, userNameClaim!.Value);
+				var (findUserResult, findVacancyResult) = await _tabsService.AddVacansyToTabAsync(model, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();
@@ -175,7 +181,7 @@ namespace Recruiting_Company_Web_API.Controllers
 			{
 				var userNameClaim = User.FindFirst(ClaimTypes.Name);
 				var (findUserResult, findVacancyResult, findTabResult)
-					= await _seekerService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
+					= await _tabsService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
 				if (!findUserResult)
 				{
 					return BadRequest();
