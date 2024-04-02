@@ -107,6 +107,25 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
+		[HttpGet("GetResponses")]
+		public async Task<IActionResult> GetResponses()
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, responses) = await _seekerService.GetResponsesAsync(userNameClaim!.Value);
+				if (!findUserResult)
+				{
+					return BadRequest();
+				}
+				return Ok(new { responses });
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
 		[HttpGet("GetTabs")]
 		public async Task<IActionResult> GetTabs()
 		{

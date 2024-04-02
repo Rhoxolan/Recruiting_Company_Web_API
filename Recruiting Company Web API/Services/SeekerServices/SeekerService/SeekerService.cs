@@ -185,6 +185,32 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.SeekerService
 			return (findUserResult, findVacancyResult, findCVResult, response);
 		}
 
+		public async Task<(bool, IEnumerable<dynamic>?)> GetResponsesAsync(string name)
+		{
+			bool findUserResult;
+			IEnumerable<dynamic>? responses = null;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				responses = await _context.Responses
+					.Where(c => c.CV.SeekerID == seeker!.Id)
+					.Select(r => new
+					{
+						r.Id,
+						r.ResponseTime,
+						r.VacancyID,
+						r.CVID,
+						CVUploadDate = r.CV.UploadDate,
+						File = r.CV.File != null ? Convert.ToBase64String(r.CV.File) : null,
+						Format = r.CV.File != null ? r.CV.FileFormat : null,
+						IsFile = r.CV.File != null,
+						IsLink = r.CV.Link != null,
+						Link = r.CV.Link ?? null
+					}).ToListAsync();
+			}
+			return (findUserResult, responses);
+		}
+
 		#endregion
 
 		#region Tabs
