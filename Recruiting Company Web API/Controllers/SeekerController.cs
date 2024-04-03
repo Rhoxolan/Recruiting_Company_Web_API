@@ -132,6 +132,21 @@ namespace Recruiting_Company_Web_API.Controllers
 			}
 		}
 
+		[HttpGet("IsResponsed/{vacancyId}")]
+		public async Task<IActionResult> IsResponded(ulong vacancyId)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, isResponded) = await _responseService.CheckIsRespondedAsync(vacancyId, userNameClaim!.Value);
+				return Ok(new { isResponded });
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
+
 		[HttpGet("GetTabs")]
 		public async Task<IActionResult> GetTabs()
 		{

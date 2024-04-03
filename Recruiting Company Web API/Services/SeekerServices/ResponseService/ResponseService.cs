@@ -87,5 +87,20 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 			}
 			return (findUserResult, responses);
 		}
+
+		public async Task<(bool, bool)> CheckIsRespondedAsync(ulong vacancyId, string name)
+		{
+			bool findUserResult;
+			bool isResponded = false;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				isResponded = await _context.Responses
+					.Where(r => r.CV.SeekerID == seeker!.Id)
+					.Where(r => r.VacancyID == vacancyId)
+					.AnyAsync();
+			}
+			return (findUserResult, isResponded);
+		}
 	}
 }
