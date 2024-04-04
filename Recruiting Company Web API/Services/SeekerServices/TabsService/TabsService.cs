@@ -92,5 +92,20 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 			}
 			return (findUserResult, findVacancyResult, findTabResult);
 		}
+
+		public async Task<(bool, bool)> CheckIsNotedAsync(ulong vacancyId, string name)
+		{
+			bool findUserResult;
+			bool isNoted = false;
+			var seeker = await _userManager.FindByNameAsync(name);
+			if (findUserResult = seeker != null)
+			{
+				isNoted = await _context.SeekersTabs
+					.Where(t => t.SeekerID == seeker!.Id)
+					.Where(t => t.VacancyID == vacancyId)
+					.AnyAsync();
+			}
+			return (findUserResult, isNoted);
+		}
 	}
 }

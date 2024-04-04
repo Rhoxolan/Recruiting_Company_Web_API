@@ -212,5 +212,20 @@ namespace Recruiting_Company_Web_API.Controllers
 				return Problem("Error. Please contact to developer");
 			}
 		}
+
+		[HttpGet("IsNoted/{vacancyId}")]
+		public async Task<IActionResult> IsNoted(ulong vacancyId)
+		{
+			try
+			{
+				var userNameClaim = User.FindFirst(ClaimTypes.Name);
+				var (findUserResult, isNoted) = await _tabsService.CheckIsNotedAsync(vacancyId, userNameClaim!.Value);
+				return Ok(new { isNoted });
+			}
+			catch
+			{
+				return Problem("Error. Please contact to developer");
+			}
+		}
 	}
 }
