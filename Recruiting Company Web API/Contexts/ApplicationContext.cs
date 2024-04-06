@@ -25,6 +25,11 @@ namespace Recruiting_Company_Web_API.Contexts
 		{
 			builder.Entity<Category>().HasData(InitCategories());
 			builder.Entity<SeekerTab>().HasIndex("SeekerID", "VacancyID").IsUnique();
+			
+			builder.Entity<SeekerTab>().HasOne(e => e.Vacancy).WithMany().HasForeignKey(e => e.VacancyID).OnDelete(DeleteBehavior.Cascade);
+			builder.Entity<Response>().HasOne(e => e.Vacancy).WithMany().HasForeignKey(e => e.VacancyID).OnDelete(DeleteBehavior.Cascade);
+			builder.Entity<Response>().HasOne(e => e.CV).WithMany().HasForeignKey(e => e.CVID).OnDelete(DeleteBehavior.Cascade);
+
 			base.OnModelCreating(builder);
 		}
 		
