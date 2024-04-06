@@ -2,23 +2,23 @@
 
 namespace Recruiting_Company_Web_API.Entities
 {
-	public record CV
+	public class CV
 	{
-		public ulong Id { get; init; }
+		public ulong Id { get; set; }
 
-		public required DateTime UploadDate { get; init; }
+		public required DateTime UploadDate { get; set; }
 
 		[MaxLength(10 * 1024 * 1024)]
-		public byte[]? File {  get; init; }
+		public byte[]? File {  get; set; }
 
 		[MaxLength(3)]
-		public string? FileFormat { get; init; }
+		public string? FileFormat { get; set; }
 
 		[MaxLength(100)]
-		public string? Link { get; init; }
+		public string? Link { get; set; }
 
-		public required Seeker Seeker { get; init; }
+		public required Seeker Seeker { get; set; }
 
-		public string? SeekerID { get; init; }
+		public string? SeekerID { get; set; }
 	}
 }

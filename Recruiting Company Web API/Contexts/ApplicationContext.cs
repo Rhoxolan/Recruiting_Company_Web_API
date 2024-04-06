@@ -14,6 +14,7 @@ namespace Recruiting_Company_Web_API.Contexts
 		public DbSet<Category> Categories { get; set; }
 		public DbSet<CV> CVs { get; set; }
 		public DbSet<Response> Responses { get; set; }
+		public DbSet<SeekerTab> SeekersTabs { get; set; }
 
 		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
 		{
@@ -23,6 +24,12 @@ namespace Recruiting_Company_Web_API.Contexts
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
 			builder.Entity<Category>().HasData(InitCategories());
+			builder.Entity<SeekerTab>().HasIndex("SeekerID", "VacancyID").IsUnique();
+			
+			builder.Entity<SeekerTab>().HasOne(e => e.Vacancy).WithMany().HasForeignKey(e => e.VacancyID).OnDelete(DeleteBehavior.Cascade);
+			builder.Entity<Response>().HasOne(e => e.Vacancy).WithMany().HasForeignKey(e => e.VacancyID).OnDelete(DeleteBehavior.Cascade);
+			builder.Entity<Response>().HasOne(e => e.CV).WithMany().HasForeignKey(e => e.CVID).OnDelete(DeleteBehavior.Cascade);
+
 			base.OnModelCreating(builder);
 		}
 		

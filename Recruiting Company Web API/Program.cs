@@ -8,6 +8,9 @@ using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
 using Recruiting_Company_Web_API.Services.EmployerServices.EmployerService;
 using Recruiting_Company_Web_API.Services.GuestServices.GuestService;
+using Recruiting_Company_Web_API.Services.SeekerServices.CVService;
+using Recruiting_Company_Web_API.Services.SeekerServices.ResponseService;
+using Recruiting_Company_Web_API.Services.SeekerServices.TabsService;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +22,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddCors(opt =>
 	opt.AddDefaultPolicy(builder =>
-	builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod())); //Провести более тонкую настройку
+	builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 	.AddEntityFrameworkStores<ApplicationContext>();
@@ -55,7 +58,10 @@ builder.Services.AddEndpointsApiExplorer()
 	.AddTransient<IJWTService, JWTService>()
 	.AddTransient<IAccountService, AccountService>()
 	.AddTransient<IEmployerService, EmployerService>()
-	.AddTransient<IGuestService, GuestService>();
+	.AddTransient<IGuestService, GuestService>()
+	.AddTransient<ICVService, CVService>()
+	.AddTransient<IResponseService, ResponseService>()
+	.AddTransient<ITabsService, TabsService>();
 
 var app = builder.Build();
 
