@@ -11,24 +11,14 @@ namespace Recruiting_Company_Web_API.Controllers
 	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
-	public class SeekerController : ControllerBase
+	public class SeekerController(ICVService cvService, IResponseService responseService,
+		ITabsService tabsService) : ControllerBase
 	{
-		private readonly ICVService _cvService;
-		private readonly IResponseService _responseService;
-		private readonly ITabsService _tabsService;
-
-		public SeekerController(ICVService cvService, IResponseService responseService, ITabsService tabsService)
-		{
-			_cvService = cvService;
-			_responseService = responseService;
-			_tabsService = tabsService;
-		}
-
 		[HttpGet("GetCVs")]
 		public async Task<IActionResult> GetCVs()
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, cvs) = await _cvService.GetCVsAsync(userNameClaim!.Value);
+			var (findUserResult, cvs) = await cvService.GetCVsAsync(userNameClaim!.Value);
 			if (!findUserResult || cvs == null)
 			{
 				return BadRequest();
@@ -40,7 +30,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> UploadCV(CVModel model)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (modelValidResult, findUserResult, cv) = await _cvService.UploadCVAsync(model, userNameClaim!.Value);
+			var (modelValidResult, findUserResult, cv) = await cvService.UploadCVAsync(model, userNameClaim!.Value);
 			if (!modelValidResult || !findUserResult || cv == null)
 			{
 				return BadRequest();
@@ -52,7 +42,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> DeleteCV(ulong id)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findCVResult) = await _cvService.DeleteCVAsync(id, userNameClaim!.Value);
+			var (findUserResult, findCVResult) = await cvService.DeleteCVAsync(id, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -69,7 +59,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
 			var (findUserResult, findVacancyResult, findCVResult, response)
-				= await _responseService.RespondToVacancyAsync(model, userNameClaim!.Value);
+				= await responseService.RespondToVacancyAsync(model, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -89,7 +79,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> GetResponses()
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, responses) = await _responseService.GetResponsesAsync(userNameClaim!.Value);
+			var (findUserResult, responses) = await responseService.GetResponsesAsync(userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -101,7 +91,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> IsResponded(ulong vacancyId)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, isResponded) = await _responseService.CheckIsRespondedAsync(vacancyId, userNameClaim!.Value);
+			var (findUserResult, isResponded) = await responseService.CheckIsRespondedAsync(vacancyId, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -113,7 +103,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> GetTabs()
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, tabs) = await _tabsService.GetTabsAsync(userNameClaim!.Value);
+			var (findUserResult, tabs) = await tabsService.GetTabsAsync(userNameClaim!.Value);
 			if (!findUserResult || tabs == null)
 			{
 				return BadRequest();
@@ -125,7 +115,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> AddVacansyToTab(TabModel model)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult) = await _tabsService.AddVacansyToTabAsync(model, userNameClaim!.Value);
+			var (findUserResult, findVacancyResult) = await tabsService.AddVacansyToTabAsync(model, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -142,7 +132,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
 			var (findUserResult, findVacancyResult, findTabResult)
-				= await _tabsService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
+				= await tabsService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -158,7 +148,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> IsNoted(ulong vacancyId)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, isNoted) = await _tabsService.CheckIsNotedAsync(vacancyId, userNameClaim!.Value);
+			var (findUserResult, isNoted) = await tabsService.CheckIsNotedAsync(vacancyId, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();

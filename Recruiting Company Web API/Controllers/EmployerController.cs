@@ -9,20 +9,13 @@ namespace Recruiting_Company_Web_API.Controllers
 	[Route("api/[controller]")]
 	[ApiController]
 	[Authorize]
-	public class EmployerController : ControllerBase
+	public class EmployerController(IEmployerService employerService) : ControllerBase
 	{
-		private readonly IEmployerService _employerService;
-
-		public EmployerController(IEmployerService employerService)
-		{
-			_employerService = employerService;
-		}
-
 		[HttpGet("Vacancies")]
 		public async Task<IActionResult> GetVacancies()
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, vacancies) = await _employerService.GetVacanciesAsync(userNameClaim!.Value);
+			var (findUserResult, vacancies) = await employerService.GetVacanciesAsync(userNameClaim!.Value);
 			if (!findUserResult || vacancies == null)
 			{
 				return BadRequest();
@@ -34,7 +27,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> AddVacancy(VacancyModel model)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, vacancy) = await _employerService.AddVacancyAsync(model, userNameClaim!.Value);
+			var (findUserResult, vacancy) = await employerService.AddVacancyAsync(model, userNameClaim!.Value);
 			if (!findUserResult || vacancy == null)
 			{
 				return BadRequest();
@@ -46,7 +39,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> EditVacancy(VacancyModel model)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, vacancy) = await _employerService.EditVacansyAsync(model, userNameClaim!.Value);
+			var (findUserResult, vacancy) = await employerService.EditVacansyAsync(model, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -62,7 +55,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> DeleteVacancy(ulong id)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult) = await _employerService.DeleteVacancyAsync(id, userNameClaim!.Value);
+			var (findUserResult, findVacancyResult) = await employerService.DeleteVacancyAsync(id, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();
@@ -78,7 +71,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> GetResponses(ulong id)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult, responses) = await _employerService
+			var (findUserResult, findVacancyResult, responses) = await employerService
 				.GetVacancyResponsesAsync(id, userNameClaim!.Value);
 			if (!findUserResult)
 			{
@@ -95,7 +88,7 @@ namespace Recruiting_Company_Web_API.Controllers
 		public async Task<IActionResult> GetResponseCVFile(ulong id)
 		{
 			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, responseCVFile) = await _employerService.GetVacancyResponseCVFileAsync(id, userNameClaim!.Value);
+			var (findUserResult, responseCVFile) = await employerService.GetVacancyResponseCVFileAsync(id, userNameClaim!.Value);
 			if (!findUserResult)
 			{
 				return BadRequest();

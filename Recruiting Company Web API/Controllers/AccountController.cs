@@ -7,38 +7,29 @@ namespace Recruiting_Company_Web_API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class AccountController : ControllerBase
+	public class AccountController(IJWTService jWTService, IAccountService accountService) : ControllerBase
 	{
-		private readonly IAccountService _accountService;
-		private readonly IJWTService _JWTService;
-
-		public AccountController(IJWTService jWTService, IAccountService accountService)
-		{
-			_JWTService = jWTService;
-			_accountService = accountService;
-		}
-
 		[HttpPost("register")]
 		public async Task<IActionResult> Register(RegisterModel model)
 		{
-			var result = await _accountService.CreateUserAsync(model);
+			var result = await accountService.CreateUserAsync(model);
 			if (!result.result.Succeeded)
 			{
 				return BadRequest(new { error = result.result.Errors.First().Description });
 			}
-			var token = _JWTService.GenerateJWTToken(result.user);
+			var token = jWTService.GenerateJWTToken(result.user);
 			return Ok(new { token });
 		}
 
 		[HttpPost("login")]
 		public async Task<IActionResult> Login(LoginModel model)
 		{
-			var result = await _accountService.SignInUserAsync(model);
+			var result = await accountService.SignInUserAsync(model);
 			if (result.user == null || !result.result)
 			{
 				return Unauthorized("Authentication failed!");
 			}
-			var token = _JWTService.GenerateJWTToken(result.user);
+			var token = jWTService.GenerateJWTToken(result.user);
 			return Ok(new { token });
 		}
 	}

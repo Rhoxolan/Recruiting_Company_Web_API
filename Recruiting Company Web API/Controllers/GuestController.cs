@@ -6,19 +6,12 @@ namespace Recruiting_Company_Web_API.Controllers
 {
 	[Route("api/[controller]")]
 	[ApiController]
-	public class GuestController : ControllerBase
+	public class GuestController(IGuestService guestService) : ControllerBase
 	{
-		private readonly IGuestService _guestService;
-
-		public GuestController(IGuestService guestService)
-		{
-			_guestService = guestService;
-		}
-
 		[HttpGet("Vacancy/{id}")]
 		public async Task<IActionResult> GetVacancy(ulong id)
 		{
-			var vacancy = await _guestService.GetVacancyAsync(id);
+			var vacancy = await guestService.GetVacancyAsync(id);
 			if (vacancy == null)
 			{
 				return NotFound();
@@ -29,14 +22,14 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpGet("VacanciesCount")]
 		public async Task<IActionResult> GetVacanciesCount([FromQuery] VacancyRequestParameters requestParameters)
 		{
-			int count = await _guestService.GetVacanciesCountAsync(requestParameters);
+			int count = await guestService.GetVacanciesCountAsync(requestParameters);
 			return Ok(new { count });
 		}
 
 		[HttpGet("Vacancies")]
 		public async Task<IActionResult> GetVacancies([FromQuery] VacancyRequestParameters requestParameters)
 		{
-			var vacancies = await _guestService.GetVacanciesAsync(requestParameters);
+			var vacancies = await guestService.GetVacanciesAsync(requestParameters);
 			return Ok(new { vacancies });
 		}
 	}
