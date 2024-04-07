@@ -4,7 +4,7 @@ namespace Recruiting_Company_Web_API.Models.SeekerModels
 {
 	public class CVModel
 	{
-		[RegularExpression("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$")]
+		[Base64String]
 		public string? File {  get; set; }
 
 		[MaxLength(3)]
