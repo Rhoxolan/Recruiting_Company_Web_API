@@ -6,25 +6,16 @@ using Recruiting_Company_Web_API.Models.SeekerModels;
 
 namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 {
-	public class CVService : ICVService
+	public class CVService(UserManager<Seeker> userManager, ApplicationContext context) : ICVService
 	{
-		private readonly UserManager<Seeker> _userManager;
-		private readonly ApplicationContext _context;
-
-		public CVService(UserManager<Seeker> userManager, ApplicationContext context)
-		{
-			_userManager = userManager;
-			_context = context;
-		}
-
 		public async Task<(bool, IEnumerable<dynamic>?)> GetCVsAsync(string name)
 		{
 			bool findUserResult;
 			IEnumerable<dynamic>? cvs = null;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				cvs = await _context.CVs
+				cvs = await context.CVs
 					.Where(c => c.SeekerID == seeker!.Id)
 					.Select(c => new
 					{
@@ -63,7 +54,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 		{
 			bool findUserResult;
 			dynamic? cv = null;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
 				cv = await upload(model, seeker!);
@@ -80,8 +71,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				UploadDate = DateTime.Now,
 				Seeker = seeker
 			};
-			await _context.CVs.AddAsync(cvEntity);
-			await _context.SaveChangesAsync();
+			await context.CVs.AddAsync(cvEntity);
+			await context.SaveChangesAsync();
 			return new
 			{
 				cvEntity.Id,
@@ -101,8 +92,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				UploadDate = DateTime.Now,
 				Seeker = seeker
 			};
-			await _context.CVs.AddAsync(cvEntity);
-			await _context.SaveChangesAsync();
+			await context.CVs.AddAsync(cvEntity);
+			await context.SaveChangesAsync();
 			return new
 			{
 				cvEntity.Id,
@@ -119,16 +110,16 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 		{
 			bool findUserResult;
 			bool findCVResult = false;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				var cv = await _context.CVs
+				var cv = await context.CVs
 					.Where(c => c.SeekerID == seeker!.Id)
 					.Where(c => c.Id == id).FirstOrDefaultAsync();
 				if (findCVResult = cv != null)
 				{
-					_context.CVs.Remove(cv!);
-					await _context.SaveChangesAsync();
+					context.CVs.Remove(cv!);
+					await context.SaveChangesAsync();
 				}
 			}
 			return (findUserResult, findCVResult);

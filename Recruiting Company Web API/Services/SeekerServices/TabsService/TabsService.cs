@@ -6,25 +6,16 @@ using Recruiting_Company_Web_API.Models.SeekerModels;
 
 namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 {
-	public class TabsService : ITabsService
+	public class TabsService(UserManager<Seeker> userManager, ApplicationContext context) : ITabsService
 	{
-		private readonly UserManager<Seeker> _userManager;
-		private readonly ApplicationContext _context;
-
-		public TabsService(UserManager<Seeker> userManager, ApplicationContext context)
-		{
-			_userManager = userManager;
-			_context = context;
-		}
-
 		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)
 		{
 			bool findUserResult;
 			bool findVacancyResult = false;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				var vacancy = await _context.Vacancies.FindAsync(model.VacancyId);
+				var vacancy = await context.Vacancies.FindAsync(model.VacancyId);
 				if (findVacancyResult = vacancy != null)
 				{
 					var tab = new SeekerTab
@@ -34,8 +25,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 						Vacancy = vacancy!,
 						VacancyID = vacancy!.Id
 					};
-					await _context.SeekersTabs.AddAsync(tab);
-					await _context.SaveChangesAsync();
+					await context.SeekersTabs.AddAsync(tab);
+					await context.SaveChangesAsync();
 				}
 			}
 			return (findUserResult, findVacancyResult);
@@ -45,10 +36,10 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 		{
 			bool findUserResult;
 			IEnumerable<dynamic>? tabs = null;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				tabs = await _context.SeekersTabs
+				tabs = await context.SeekersTabs
 					.Where(t => t.SeekerID == seeker!.Id)
 					.OrderBy(t => t.Vacancy.CreateDate)
 					.Select(t => new
@@ -74,19 +65,19 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 			bool findUserResult;
 			bool findVacancyResult = false;
 			bool findTabResult = false;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				var vacancy = await _context.Vacancies.FindAsync(id);
+				var vacancy = await context.Vacancies.FindAsync(id);
 				if (findVacancyResult = vacancy != null)
 				{
-					var tab = await _context.SeekersTabs
+					var tab = await context.SeekersTabs
 						.Where(t => t.SeekerID == seeker!.Id)
 						.Where(t => t.VacancyID == vacancy!.Id).FirstOrDefaultAsync();
 					if (findTabResult = tab != null)
 					{
-						_context.SeekersTabs.Remove(tab!);
-						await _context.SaveChangesAsync();
+						context.SeekersTabs.Remove(tab!);
+						await context.SaveChangesAsync();
 					}
 				}
 			}
@@ -97,10 +88,10 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 		{
 			bool findUserResult;
 			bool isNoted = false;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				isNoted = await _context.SeekersTabs
+				isNoted = await context.SeekersTabs
 					.Where(t => t.SeekerID == seeker!.Id)
 					.Where(t => t.VacancyID == vacancyId)
 					.AnyAsync();

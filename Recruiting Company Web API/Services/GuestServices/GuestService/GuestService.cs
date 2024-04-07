@@ -5,18 +5,11 @@ using Recruiting_Company_Web_API.RequestParameters.GuestRequestParameters;
 
 namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 {
-	public class GuestService : IGuestService
+	public class GuestService(ApplicationContext context) : IGuestService
 	{
-		private readonly ApplicationContext _context;
-
-		public GuestService(ApplicationContext context)
-		{
-			_context = context;
-		}
-
 		public async Task<dynamic?> GetVacancyAsync(ulong id)
 		{
-			return await _context.Vacancies
+			return await context.Vacancies
 				.Where(v => v.Id == id)
 				.Select(v => new
 				{
@@ -65,7 +58,7 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
 		{
-			return _context.Vacancies
+			return context.Vacancies
 				.Where(v => requestParameters.CategoryID == null || v.CategoryID == requestParameters.CategoryID)
 				.Where(v => requestParameters.EmployerID == null || v.Employer.PublicId.ToString() == requestParameters.EmployerID);
 		}
