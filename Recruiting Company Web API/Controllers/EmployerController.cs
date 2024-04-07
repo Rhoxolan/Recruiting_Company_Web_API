@@ -21,132 +21,90 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpGet("Vacancies")]
 		public async Task<IActionResult> GetVacancies()
 		{
-			try
+			var userNameClaim = User.FindFirst(ClaimTypes.Name);
+			var (findUserResult, vacancies) = await _employerService.GetVacanciesAsync(userNameClaim!.Value);
+			if (!findUserResult || vacancies == null)
 			{
-				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, vacancies) = await _employerService.GetVacanciesAsync(userNameClaim!.Value);
-				if (!findUserResult || vacancies == null)
-				{
-					return BadRequest();
-				}
-				return Ok(new { vacancies });
+				return BadRequest();
 			}
-			catch
-			{
-				return Problem("Error. Please contact to developer");
-			}
+			return Ok(new { vacancies });
 		}
 
 		[HttpPost("AddVacancy")]
 		public async Task<IActionResult> AddVacancy(VacancyModel model)
 		{
-			try
+			var userNameClaim = User.FindFirst(ClaimTypes.Name);
+			var (findUserResult, vacancy) = await _employerService.AddVacancyAsync(model, userNameClaim!.Value);
+			if (!findUserResult || vacancy == null)
 			{
-				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, vacancy) = await _employerService.AddVacancyAsync(model, userNameClaim!.Value);
-				if (!findUserResult || vacancy == null)
-				{
-					return BadRequest();
-				}
-				return Ok(new { vacancy });
+				return BadRequest();
 			}
-			catch
-			{
-				return Problem("Error. Please contact to developer");
-			}
+			return Ok(new { vacancy });
 		}
 
 		[HttpPatch("EditVacancy")]
 		public async Task<IActionResult> EditVacancy(VacancyModel model)
 		{
-			try
+			var userNameClaim = User.FindFirst(ClaimTypes.Name);
+			var (findUserResult, vacancy) = await _employerService.EditVacansyAsync(model, userNameClaim!.Value);
+			if (!findUserResult)
 			{
-				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, vacancy) = await _employerService.EditVacansyAsync(model, userNameClaim!.Value);
-				if (!findUserResult)
-				{
-					return BadRequest();
-				}
-				if (vacancy == null)
-				{
-					return NotFound();
-				}
-				return Ok(new { vacancy });
+				return BadRequest();
 			}
-			catch
+			if (vacancy == null)
 			{
-				return Problem("Error. Please contact to developer");
+				return NotFound();
 			}
+			return Ok(new { vacancy });
 		}
 
 		[HttpDelete("DeleteVacancy/{id}")]
 		public async Task<IActionResult> DeleteVacancy(ulong id)
 		{
-			try
+			var userNameClaim = User.FindFirst(ClaimTypes.Name);
+			var (findUserResult, findVacancyResult) = await _employerService.DeleteVacancyAsync(id, userNameClaim!.Value);
+			if (!findUserResult)
 			{
-				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findVacancyResult) = await _employerService.DeleteVacancyAsync(id, userNameClaim!.Value);
-				if (!findUserResult)
-				{
-					return BadRequest();
-				}
-				if (!findVacancyResult)
-				{
-					return NotFound();
-				}
-				return Ok();
+				return BadRequest();
 			}
-			catch
+			if (!findVacancyResult)
 			{
-				return Problem("Error. Please contact to developer");
+				return NotFound();
 			}
+			return Ok();
 		}
 
 		[HttpGet("Responses/{id}")]
 		public async Task<IActionResult> GetResponses(ulong id)
 		{
-			try
+			var userNameClaim = User.FindFirst(ClaimTypes.Name);
+			var (findUserResult, findVacancyResult, responses) = await _employerService
+				.GetVacancyResponsesAsync(id, userNameClaim!.Value);
+			if (!findUserResult)
 			{
-				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, findVacancyResult, responses) = await _employerService
-					.GetVacancyResponsesAsync(id, userNameClaim!.Value);
-				if (!findUserResult)
-				{
-					return BadRequest();
-				}
-				if (!findVacancyResult)
-				{
-					return NotFound();
-				}
-				return Ok(new { responses });
+				return BadRequest();
 			}
-			catch
+			if (!findVacancyResult)
 			{
-				return Problem("Error. Please contact to developer");
+				return NotFound();
 			}
+			return Ok(new { responses });
 		}
 
 		[HttpGet("ResponseCVFile/{id}")]
 		public async Task<IActionResult> GetResponseCVFile(ulong id)
 		{
-			try
+			var userNameClaim = User.FindFirst(ClaimTypes.Name);
+			var (findUserResult, responseCVFile) = await _employerService.GetVacancyResponseCVFileAsync(id, userNameClaim!.Value);
+			if (!findUserResult)
 			{
-				var userNameClaim = User.FindFirst(ClaimTypes.Name);
-				var (findUserResult, responseCVFile) = await _employerService.GetVacancyResponseCVFileAsync(id, userNameClaim!.Value);
-				if (!findUserResult)
-				{
-					return BadRequest();
-				}
-				if (responseCVFile == null)
-				{
-					return NotFound();
-				}
-				return Ok(new { responseCVFile });
+				return BadRequest();
 			}
-			catch
+			if (responseCVFile == null)
 			{
-				return Problem("Error. Please contact to developer");
+				return NotFound();
 			}
+			return Ok(new { responseCVFile });
 		}
 	}
 }

@@ -21,39 +21,25 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpPost("register")]
 		public async Task<IActionResult> Register(RegisterModel model)
 		{
-			try
+			var result = await _accountService.CreateUserAsync(model);
+			if (!result.result.Succeeded)
 			{
-				var result = await _accountService.CreateUserAsync(model);
-				if (!result.result.Succeeded)
-				{
-					return BadRequest(new { error = result.result.Errors.First().Description });
-				}
-				var token = _JWTService.GenerateJWTToken(result.user);
-				return Ok(new { token });
+				return BadRequest(new { error = result.result.Errors.First().Description });
 			}
-			catch
-			{
-				return Problem("Error. Please contact to developer");
-			}
+			var token = _JWTService.GenerateJWTToken(result.user);
+			return Ok(new { token });
 		}
 
 		[HttpPost("login")]
 		public async Task<IActionResult> Login(LoginModel model)
 		{
-			try
+			var result = await _accountService.SignInUserAsync(model);
+			if (result.user == null || !result.result)
 			{
-				var result = await _accountService.SignInUserAsync(model);
-				if (result.user == null || !result.result)
-				{
-					return Unauthorized("Authentication failed!");
-				}
-				var token = _JWTService.GenerateJWTToken(result.user);
-				return Ok(new { token });
+				return Unauthorized("Authentication failed!");
 			}
-			catch
-			{
-				return Problem("Error. Please contact to developer");
-			}
+			var token = _JWTService.GenerateJWTToken(result.user);
+			return Ok(new { token });
 		}
 	}
 }
