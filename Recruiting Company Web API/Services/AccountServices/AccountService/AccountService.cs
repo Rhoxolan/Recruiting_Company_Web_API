@@ -4,17 +4,8 @@ using Recruiting_Company_Web_API.Models.AccountModels;
 
 namespace Recruiting_Company_Web_API.Services.AccountServices.AccountService
 {
-	public class AccountService : IAccountService
+	public class AccountService(UserManager<Employer> employerManager, UserManager<Seeker> seekerManager) : IAccountService
 	{
-		private readonly UserManager<Employer> _employerManager;
-		private readonly UserManager<Seeker> _seekerManager;
-
-		public AccountService(UserManager<Employer> employerManager, UserManager<Seeker> seekerManager)
-		{
-			_employerManager = employerManager;
-			_seekerManager = seekerManager;
-		}
-
 		public async Task<(IdentityResult, IdentityUser)> CreateUserAsync(RegisterModel model)
 		{
 			if (model.AccountType == 1)
@@ -49,7 +40,7 @@ namespace Recruiting_Company_Web_API.Services.AccountServices.AccountService
 				Age = age,
 				Name = name
 			};
-			return (await _seekerManager.CreateAsync(user, password), user);
+			return (await seekerManager.CreateAsync(user, password), user);
 		}
 
 		private async Task<(IdentityResult, IdentityUser)> CreateEmployerAsync(string login, string companyName, string password)
@@ -60,16 +51,16 @@ namespace Recruiting_Company_Web_API.Services.AccountServices.AccountService
 				CompanyName = companyName,
 				PublicId = Guid.NewGuid()
 			};
-			return (await _employerManager.CreateAsync(user, password), user);
+			return (await employerManager.CreateAsync(user, password), user);
 		}
 
 		private async Task<(bool, IdentityUser?)> SignInSeekerAsync(string login, string password)
 		{
 			var checkPassword = false;
-			var user = await _seekerManager.FindByNameAsync(login);
+			var user = await seekerManager.FindByNameAsync(login);
 			if (user != null)
 			{
-				checkPassword = await _seekerManager.CheckPasswordAsync(user, password);
+				checkPassword = await seekerManager.CheckPasswordAsync(user, password);
 			}
 			return (checkPassword, user);
 		}
@@ -77,10 +68,10 @@ namespace Recruiting_Company_Web_API.Services.AccountServices.AccountService
 		private async Task<(bool, IdentityUser?)> SignInEmployerAsync(string login, string password)
 		{
 			var checkPassword = false;
-			var user = await _employerManager.FindByNameAsync(login);
+			var user = await employerManager.FindByNameAsync(login);
 			if (user != null)
 			{
-				checkPassword = await _employerManager.CheckPasswordAsync(user, password);
+				checkPassword = await employerManager.CheckPasswordAsync(user, password);
 			}
 			return (checkPassword, user);
 		}

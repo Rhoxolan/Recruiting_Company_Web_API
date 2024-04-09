@@ -6,30 +6,21 @@ using Recruiting_Company_Web_API.Models.SeekerModels;
 
 namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 {
-	public class ResponseService : IResponseService
+	public class ResponseService(UserManager<Seeker> userManager, ApplicationContext context) : IResponseService
 	{
-		private readonly UserManager<Seeker> _userManager;
-		private readonly ApplicationContext _context;
-
-		public ResponseService(UserManager<Seeker> userManager, ApplicationContext context)
-		{
-			_userManager = userManager;
-			_context = context;
-		}
-
 		public async Task<(bool, bool, bool, dynamic?)> RespondToVacancyAsync(ResponseModel model, string name)
 		{
 			bool findUserResult;
 			bool findVacancyResult = false;
 			bool findCVResult = false;
 			dynamic? response = null;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				var vacancy = await _context.Vacancies.FindAsync(model.VacancyId);
+				var vacancy = await context.Vacancies.FindAsync(model.VacancyId);
 				if (findVacancyResult = vacancy != null)
 				{
-					var cv = await _context.CVs
+					var cv = await context.CVs
 						.Where(c => c.SeekerID == seeker!.Id)
 						.Where(c => c.Id == model.CVId)
 						.FirstOrDefaultAsync();
@@ -41,8 +32,8 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 							Vacancy = vacancy!,
 							CV = cv!
 						};
-						await _context.Responses.AddAsync(responseEntity);
-						await _context.SaveChangesAsync();
+						await context.Responses.AddAsync(responseEntity);
+						await context.SaveChangesAsync();
 						response = new
 						{
 							responseEntity.Id,
@@ -66,10 +57,10 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 		{
 			bool findUserResult;
 			IEnumerable<dynamic>? responses = null;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				responses = await _context.Responses
+				responses = await context.Responses
 					.Where(c => c.CV.SeekerID == seeker!.Id)
 					.Select(r => new
 					{
@@ -92,10 +83,10 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 		{
 			bool findUserResult;
 			bool isResponded = false;
-			var seeker = await _userManager.FindByNameAsync(name);
+			var seeker = await userManager.FindByNameAsync(name);
 			if (findUserResult = seeker != null)
 			{
-				isResponded = await _context.Responses
+				isResponded = await context.Responses
 					.Where(r => r.CV.SeekerID == seeker!.Id)
 					.Where(r => r.VacancyID == vacancyId)
 					.AnyAsync();

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.Entities;
+using Recruiting_Company_Web_API.ExceptionHandlers;
 using Recruiting_Company_Web_API.Services.AccountServices.AccountService;
 using Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService;
 using Recruiting_Company_Web_API.Services.EmployerServices.EmployerService;
@@ -61,7 +62,9 @@ builder.Services.AddEndpointsApiExplorer()
 	.AddTransient<IGuestService, GuestService>()
 	.AddTransient<ICVService, CVService>()
 	.AddTransient<IResponseService, ResponseService>()
-	.AddTransient<ITabsService, TabsService>();
+	.AddTransient<ITabsService, TabsService>()
+	.AddExceptionHandler<GlobalExceptionHandler>()
+	.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -75,6 +78,7 @@ app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseExceptionHandler();
 
 app.MapControllers();
 

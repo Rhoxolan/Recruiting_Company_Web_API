@@ -6,18 +6,11 @@ using System.Text;
 
 namespace Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService
 {
-    public class JWTService : IJWTService
+    public class JWTService(IConfiguration configuration) : IJWTService
     {
-        private readonly IConfiguration _configuration;
-
-        public JWTService(IConfiguration configuration)
+		public string GenerateJWTToken(IdentityUser user)
         {
-            _configuration = configuration;
-        }
-
-        public string GenerateJWTToken(IdentityUser user)
-        {
-            var keyBytes = Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]!);
+            var keyBytes = Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]!);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -26,8 +19,8 @@ namespace Recruiting_Company_Web_API.Services.AuthenticationServices.JWTService
                 }),
                 Expires = DateTime.Now.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keyBytes), SecurityAlgorithms.HmacSha256Signature),
-                Issuer = _configuration["Jwt:Issuer"]!,
-                Audience = _configuration["Jwt:Audience"]!
+                Issuer = configuration["Jwt:Issuer"]!,
+                Audience = configuration["Jwt:Audience"]!
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
