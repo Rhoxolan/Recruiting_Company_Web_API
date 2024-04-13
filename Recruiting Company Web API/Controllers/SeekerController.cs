@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Recruiting_Company_Web_API.Infrastructure;
 using Recruiting_Company_Web_API.Models.SeekerModels;
 using Recruiting_Company_Web_API.Services.SeekerServices.CVService;
 using Recruiting_Company_Web_API.Services.SeekerServices.ResponseService;
@@ -12,18 +13,13 @@ namespace Recruiting_Company_Web_API.Controllers
 	[ApiController]
 	[Authorize]
 	public class SeekerController(ICVService cvService, IResponseService responseService,
-		ITabsService tabsService) : ControllerBase
+		ITabsService tabsService) : RecruitingCompanyController
 	{
 		[HttpGet("GetCVs")]
 		public async Task<IActionResult> GetCVs()
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, cvs) = await cvService.GetCVsAsync(userNameClaim!.Value);
-			if (!findUserResult || cvs == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { cvs });
+			var result = await cvService.GetCVsAsync(UserName);
+			return ProcessResult(result, () => Ok(new { cvs = result.Value }));
 		}
 
 		[HttpPost("AddCV")]
@@ -41,17 +37,8 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpDelete("DeleteCV/{id}")]
 		public async Task<IActionResult> DeleteCV(ulong id)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findCVResult) = await cvService.DeleteCVAsync(id, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findCVResult)
-			{
-				return NotFound();
-			}
-			return Ok();
+			var result = await cvService.DeleteCVAsync(id, UserName);
+			return ProcessResult(result, Ok);
 		}
 
 		[HttpPost("VacancyResponding")]

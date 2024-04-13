@@ -8,27 +8,26 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 {
 	public class CVService(UserManager<Seeker> userManager, ApplicationContext context) : ICVService
 	{
-		public async Task<(bool, IEnumerable<dynamic>?)> GetCVsAsync(string name)
+		public async Task<ServiceResult<IEnumerable<dynamic>>> GetCVsAsync(string name)
 		{
-			bool findUserResult;
-			IEnumerable<dynamic>? cvs = null;
 			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			if (seeker == null)
 			{
-				cvs = await context.CVs
-					.Where(c => c.SeekerID == seeker!.Id)
-					.Select(c => new
-					{
-						c.Id,
-						c.UploadDate,
-						File = c.File != null ? Convert.ToBase64String(c.File) : null,
-						Format = c.File != null ? c.FileFormat : null,
-						IsFile = c.File != null,
-						IsLink = c.Link != null,
-						Link = c.Link ?? null
-					}).ToListAsync();
+				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
-			return (findUserResult, cvs);
+			var cvs = await context.CVs
+				.Where(c => c.SeekerID == seeker!.Id)
+				.Select(c => new
+				{
+					c.Id,
+					c.UploadDate,
+					File = c.File != null ? Convert.ToBase64String(c.File) : null,
+					Format = c.File != null ? c.FileFormat : null,
+					IsFile = c.File != null,
+					IsLink = c.Link != null,
+					Link = c.Link ?? null
+				}).ToListAsync();
+			return ServiceResult<IEnumerable<dynamic>>.Success(cvs);
 		}
 
 		#region UploadCV
@@ -106,23 +105,23 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 
 		#endregion
 
-		public async Task<(bool, bool)> DeleteCVAsync(ulong id, string name)
+		public async Task<ServiceResult> DeleteCVAsync(ulong id, string name)
 		{
-			bool findUserResult;
-			bool findCVResult = false;
 			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			if (seeker == null)
 			{
-				var cv = await context.CVs
-					.Where(c => c.SeekerID == seeker!.Id)
-					.Where(c => c.Id == id).FirstOrDefaultAsync();
-				if (findCVResult = cv != null)
-				{
-					context.CVs.Remove(cv!);
-					await context.SaveChangesAsync();
-				}
+				return ServiceResult.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
-			return (findUserResult, findCVResult);
+			var cv = await context.CVs
+				.Where(c => c.SeekerID == seeker!.Id)
+				.Where(c => c.Id == id).FirstOrDefaultAsync();
+			if (cv == null)
+			{
+				return ServiceResult.Failure(ServiceErrorType.EntityNotFound, "CV not found!");
+			}
+			context.CVs.Remove(cv!);
+			await context.SaveChangesAsync();
+			return ServiceResult.Success();
 		}
 	}
 }
