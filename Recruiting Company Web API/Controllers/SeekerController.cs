@@ -25,13 +25,8 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpPost("AddCV")]
 		public async Task<IActionResult> UploadCV(CVModel model)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (modelValidResult, findUserResult, cv) = await cvService.UploadCVAsync(model, userNameClaim!.Value);
-			if (!modelValidResult || !findUserResult || cv == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { cv });
+			var result = await cvService.UploadCVAsync(model, UserName);
+			return ProcessResult(result, () => Ok(new { cv = result.Value }));
 		}
 
 		[HttpDelete("DeleteCV/{id}")]

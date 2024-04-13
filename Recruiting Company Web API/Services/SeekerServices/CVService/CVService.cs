@@ -30,35 +30,22 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 			return ServiceResult<IEnumerable<dynamic>>.Success(cvs);
 		}
 
-		#region UploadCV
-
-		public async Task<(bool, bool, dynamic?)> UploadCVAsync(CVModel model, string name)
+		public async Task<ServiceResult<dynamic>> UploadCVAsync(CVModel model, string name)
 		{
-			bool modelValidResult;
-			bool findUserResult = false;
-			dynamic? cv = null;
-			if (modelValidResult = model.File != null && model.Link == null)
-			{
-				(findUserResult, cv) = await UploadCVAsync_Internal(model, name, UploadCVAsFileAsync);
-			}
-			else if (modelValidResult = model.File == null && model.Link != null)
-			{
-				(findUserResult, cv) = await UploadCVAsync_Internal(model, name, UploadCVAsLinkAsync);
-			}
-			return (modelValidResult, findUserResult, cv);
-		}
-
-		private async Task<(bool, dynamic?)> UploadCVAsync_Internal(CVModel model, string name,
-			Func<CVModel, Seeker, Task<dynamic>> upload)
-		{
-			bool findUserResult;
-			dynamic? cv = null;
 			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			if (seeker == null)
 			{
-				cv = await upload(model, seeker!);
+				return ServiceResult<dynamic>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
-			return (findUserResult, cv);
+			if (model.File != null && model.Link == null)
+			{
+				return ServiceResult<dynamic>.Success(await UploadCVAsFileAsync(model, seeker));
+			}
+			else if (model.File == null && model.Link != null)
+			{
+				return ServiceResult<dynamic>.Success(await UploadCVAsLinkAsync(model, seeker));
+			}
+			return ServiceResult<dynamic>.Failure(ServiceErrorType.BadModel, "Bad Model!");
 		}
 
 		private async Task<dynamic> UploadCVAsFileAsync(CVModel model, Seeker seeker)
@@ -102,8 +89,6 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				IsLink = true
 			};
 		}
-
-		#endregion
 
 		public async Task<ServiceResult> DeleteCVAsync(ulong id, string name)
 		{
