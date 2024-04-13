@@ -16,7 +16,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var cvs = await context.CVs
-				.Where(c => c.SeekerID == seeker!.Id)
+				.Where(c => c.SeekerID == seeker.Id)
 				.Select(c => new
 				{
 					c.Id,
@@ -98,7 +98,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				return ServiceResult.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var cv = await context.CVs
-				.Where(c => c.SeekerID == seeker!.Id)
+				.Where(c => c.SeekerID == seeker.Id)
 				.Where(c => c.Id == id).FirstOrDefaultAsync();
 			if (cv == null)
 			{

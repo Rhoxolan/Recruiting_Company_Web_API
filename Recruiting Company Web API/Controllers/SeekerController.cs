@@ -39,46 +39,22 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpPost("VacancyResponding")]
 		public async Task<IActionResult> RespondToVacancy(ResponseModel model)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult, findCVResult, response)
-				= await responseService.RespondToVacancyAsync(model, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findVacancyResult || !findCVResult)
-			{
-				return NotFound();
-			}
-			if (response == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { response });
+			var result = await responseService.RespondToVacancyAsync(model, UserName);
+			return ProcessResult(result, () => Ok(new { response = result.Value }));
 		}
 
 		[HttpGet("GetResponses")]
 		public async Task<IActionResult> GetResponses()
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, responses) = await responseService.GetResponsesAsync(userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			return Ok(new { responses });
+			var result = await responseService.GetResponsesAsync(UserName);
+			return ProcessResult(result, () => Ok(new { responses = result.Value }));
 		}
 
 		[HttpGet("IsResponsed/{vacancyId}")]
 		public async Task<IActionResult> IsResponded(ulong vacancyId)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, isResponded) = await responseService.CheckIsRespondedAsync(vacancyId, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			return Ok(new { isResponded });
+			var result = await responseService.CheckIsRespondedAsync(vacancyId, UserName);
+			return ProcessResult(result, () => Ok(new { isResponded = result.Value }));
 		}
 
 		[HttpGet("GetTabs")]
