@@ -12,11 +12,11 @@ namespace Recruiting_Company_Web_API.Infrastructure
 			get => User.FindFirst(ClaimTypes.Name)!.Value;
 		}
 
-		protected IActionResult ProcessResult(ServiceResultBase result, Func<IActionResult> ok)
+		protected IActionResult ProcessResult(ServiceResultBase result, Func<IActionResult> succesHandler)
 		{
 			if (result.Succeded && result.Error.ErrorType == None)
 			{
-				return ok();
+				return succesHandler();
 			}
 			else if (result.Error.ErrorType == EntityNotFound)
 			{

@@ -5,7 +5,6 @@ using Recruiting_Company_Web_API.Models.SeekerModels;
 using Recruiting_Company_Web_API.Services.SeekerServices.CVService;
 using Recruiting_Company_Web_API.Services.SeekerServices.ResponseService;
 using Recruiting_Company_Web_API.Services.SeekerServices.TabsService;
-using System.Security.Claims;
 
 namespace Recruiting_Company_Web_API.Controllers
 {
