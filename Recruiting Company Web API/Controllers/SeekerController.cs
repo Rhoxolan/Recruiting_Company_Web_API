@@ -60,58 +60,29 @@ namespace Recruiting_Company_Web_API.Controllers
 		[HttpGet("GetTabs")]
 		public async Task<IActionResult> GetTabs()
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, tabs) = await tabsService.GetTabsAsync(userNameClaim!.Value);
-			if (!findUserResult || tabs == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { tabs });
+			var result = await tabsService.GetTabsAsync(UserName);
+			return ProcessResult(result, () => Ok(new { tabs = result.Value }));
 		}
 
 		[HttpPost("AddTab")]
 		public async Task<IActionResult> AddVacansyToTab(TabModel model)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult) = await tabsService.AddVacansyToTabAsync(model, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findVacancyResult)
-			{
-				return NotFound();
-			}
-			return Ok();
+			var result = await tabsService.AddVacansyToTabAsync(model, UserName);
+			return ProcessResult(result, Ok);
 		}
 
 		[HttpDelete("DeleteTab/{vacancyId}")]
 		public async Task<IActionResult> DeleteTab(ulong vacancyId)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult, findTabResult)
-				= await tabsService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findVacancyResult || !findTabResult)
-			{
-				return NotFound();
-			}
-			return Ok();
+			var result = await tabsService.DeleteTabAsync(vacancyId, UserName);
+			return ProcessResult(result, Ok);
 		}
 
 		[HttpGet("IsNoted/{vacancyId}")]
 		public async Task<IActionResult> IsNoted(ulong vacancyId)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, isNoted) = await tabsService.CheckIsNotedAsync(vacancyId, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			return Ok(new { isNoted });
+			var result = await tabsService.CheckIsNotedAsync(vacancyId, UserName);
+			return ProcessResult(result, () => Ok(new { isNoted = result.Value }));
 		}
 	}
 }

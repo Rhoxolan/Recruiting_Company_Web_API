@@ -8,95 +8,98 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 {
 	public class TabsService(UserManager<Seeker> userManager, ApplicationContext context) : ITabsService
 	{
-		public async Task<(bool, bool)> AddVacansyToTabAsync(TabModel model, string name)
+		public async Task<ServiceResult> AddVacansyToTabAsync(TabModel model, string name)
 		{
-			bool findUserResult;
-			bool findVacancyResult = false;
 			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			if (seeker == null)
 			{
-				var vacancy = await context.Vacancies.FindAsync(model.VacancyId);
-				if (findVacancyResult = vacancy != null)
+				return ServiceResult.Failure(ServiceErrorType.UserNotFound, "User not found!");
+			}
+			var vacancy = await context.Vacancies.FindAsync(model.VacancyId);
+			if (vacancy == null)
+			{
+				return ServiceResult.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
+			}
+			var tab = new SeekerTab
+			{
+				Seeker = seeker,
+				SeekerID = seeker.Id,
+				Vacancy = vacancy,
+				VacancyID = vacancy.Id
+			};
+			await context.SeekersTabs.AddAsync(tab);
+			await context.SaveChangesAsync();
+			return ServiceResult.Success();
+		}
+
+		public async Task<ServiceResult<IEnumerable<dynamic>>> GetTabsAsync(string name)
+		{
+			var seeker = await userManager.FindByNameAsync(name);
+			if (seeker == null)
+			{
+				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+			}
+			var tabs = await context.SeekersTabs
+				.Where(t => t.SeekerID == seeker.Id)
+				.OrderBy(t => t.Vacancy.CreateDate)
+				.Select(t => new
 				{
-					var tab = new SeekerTab
-					{
-						Seeker = seeker!,
-						SeekerID = seeker!.Id,
-						Vacancy = vacancy!,
-						VacancyID = vacancy!.Id
-					};
-					await context.SeekersTabs.AddAsync(tab);
-					await context.SaveChangesAsync();
-				}
-			}
-			return (findUserResult, findVacancyResult);
+					t.Vacancy.Id,
+					t.Vacancy.CategoryID,
+					EmployerID = t.Vacancy.Employer.PublicId,
+					Employer = t.Vacancy.Employer.CompanyName,
+					t.Vacancy.CreateDate,
+					t.Vacancy.Title,
+					t.Vacancy.Location,
+					t.Vacancy.Salary,
+					t.Vacancy.PhoneNumber,
+					t.Vacancy.EMail,
+					t.Vacancy.Description
+				}).ToListAsync();
+			return ServiceResult<IEnumerable<dynamic>>.Success(tabs);
 		}
 
-		public async Task<(bool, IEnumerable<dynamic>?)> GetTabsAsync(string name)
+		public async Task<ServiceResult> DeleteTabAsync(ulong id, string name)
 		{
-			bool findUserResult;
-			IEnumerable<dynamic>? tabs = null;
 			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			if (seeker == null)
 			{
-				tabs = await context.SeekersTabs
-					.Where(t => t.SeekerID == seeker!.Id)
-					.OrderBy(t => t.Vacancy.CreateDate)
-					.Select(t => new
-					{
-						t.Vacancy.Id,
-						t.Vacancy.CategoryID,
-						EmployerID = t.Vacancy.Employer.PublicId,
-						Employer = t.Vacancy.Employer.CompanyName,
-						t.Vacancy.CreateDate,
-						t.Vacancy.Title,
-						t.Vacancy.Location,
-						t.Vacancy.Salary,
-						t.Vacancy.PhoneNumber,
-						t.Vacancy.EMail,
-						t.Vacancy.Description
-					}).ToListAsync();
+				return ServiceResult.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
-			return (findUserResult, tabs);
+			var vacancy = await context.Vacancies.FindAsync(id);
+			if (vacancy == null)
+			{
+				return ServiceResult.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
+			}
+			var tab = await context.SeekersTabs
+				.Where(t => t.SeekerID == seeker.Id)
+				.Where(t => t.VacancyID == vacancy.Id).FirstOrDefaultAsync();
+			if (tab == null)
+			{
+				return ServiceResult.Failure(ServiceErrorType.EntityNotFound, "Tab not found!");
+			}
+			context.SeekersTabs.Remove(tab);
+			await context.SaveChangesAsync();
+			return ServiceResult.Success();
 		}
 
-		public async Task<(bool, bool, bool)> DeleteTabAsync(ulong id, string name)
+		public async Task<ServiceResult<bool>> CheckIsNotedAsync(ulong vacancyId, string name)
 		{
-			bool findUserResult;
-			bool findVacancyResult = false;
-			bool findTabResult = false;
 			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			if (seeker == null)
 			{
-				var vacancy = await context.Vacancies.FindAsync(id);
-				if (findVacancyResult = vacancy != null)
-				{
-					var tab = await context.SeekersTabs
-						.Where(t => t.SeekerID == seeker!.Id)
-						.Where(t => t.VacancyID == vacancy!.Id).FirstOrDefaultAsync();
-					if (findTabResult = tab != null)
-					{
-						context.SeekersTabs.Remove(tab!);
-						await context.SaveChangesAsync();
-					}
-				}
+				return ServiceResult<bool>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
-			return (findUserResult, findVacancyResult, findTabResult);
-		}
-
-		public async Task<(bool, bool)> CheckIsNotedAsync(ulong vacancyId, string name)
-		{
-			bool findUserResult;
-			bool isNoted = false;
-			var seeker = await userManager.FindByNameAsync(name);
-			if (findUserResult = seeker != null)
+			var vacancy = await context.Vacancies.FindAsync(vacancyId);
+			if (vacancy == null)
 			{
-				isNoted = await context.SeekersTabs
-					.Where(t => t.SeekerID == seeker!.Id)
-					.Where(t => t.VacancyID == vacancyId)
-					.AnyAsync();
+				return ServiceResult<bool>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
 			}
-			return (findUserResult, isNoted);
+			var isNoted = await context.SeekersTabs
+				.Where(t => t.SeekerID == seeker.Id)
+				.Where(t => t.VacancyID == vacancy.Id)
+				.AnyAsync();
+			return ServiceResult<bool>.Success(isNoted);
 		}
 	}
 }
