@@ -7,9 +7,9 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 {
 	public class GuestService(ApplicationContext context) : IGuestService
 	{
-		public async Task<dynamic?> GetVacancyAsync(ulong id)
+		public async Task<ServiceResult<dynamic>> GetVacancyAsync(ulong id)
 		{
-			return await context.Vacancies
+			var vacancy = await context.Vacancies
 				.Where(v => v.Id == id)
 				.Select(v => new
 				{
@@ -25,18 +25,27 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 					v.EMail,
 					v.Description
 				}).FirstOrDefaultAsync();
+			if (vacancy == null)
+			{
+				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound);
+			}
+			return ServiceResult<dynamic>.Success(vacancy);
 		}
 
-		public async Task<int> GetVacanciesCountAsync(VacancyRequestParameters requestParameters)
+		public async Task<ServiceResult<int>> GetVacanciesCountAsync(VacancyRequestParameters requestParameters)
 		{
-			return await GetVacancies(requestParameters).CountAsync();
+			var vacanciesCount = await GetVacancies(requestParameters).CountAsync();
+			return ServiceResult<int>.Success(vacanciesCount);
 		}
 
-		public async Task<IEnumerable<dynamic>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
+		public async Task<ServiceResult<IEnumerable<dynamic>>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
 		{
-			_ = requestParameters.PageNumber ?? throw new Exception("Page number is null");
-			_ = requestParameters.Pagesize ?? throw new Exception("Page size is null");
-			return await GetVacancies(requestParameters)
+			if (requestParameters.PageNumber == null || requestParameters.Pagesize == null)
+			{
+				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.BadModel,
+					requestParameters.PageNumber == null ? "Page number is null" : "Page size is null");
+			}
+			var vacancies = await GetVacancies(requestParameters)
 				.OrderBy(v => v.CreateDate)
 				.Skip((requestParameters.PageNumber.Value - 1) * requestParameters.Pagesize.Value)
 				.Take(requestParameters.Pagesize.Value)
@@ -54,6 +63,7 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 					v.EMail,
 					v.Description
 				}).ToListAsync();
+			return ServiceResult<IEnumerable<dynamic>>.Success(vacancies);
 		}
 
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
