@@ -6,6 +6,8 @@
 		UserNotFound,
 		EntityNotFound,
 		BadModel,
+		Unauthorized,
+		Fault,
 		Unknown
 	}
 }
