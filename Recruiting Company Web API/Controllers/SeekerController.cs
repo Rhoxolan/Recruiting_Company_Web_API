@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Recruiting_Company_Web_API.Infrastructure;
 using Recruiting_Company_Web_API.Models.SeekerModels;
 using Recruiting_Company_Web_API.Services.SeekerServices.CVService;
 using Recruiting_Company_Web_API.Services.SeekerServices.ResponseService;
 using Recruiting_Company_Web_API.Services.SeekerServices.TabsService;
-using System.Security.Claims;
 
 namespace Recruiting_Company_Web_API.Controllers
 {
@@ -12,148 +12,76 @@ namespace Recruiting_Company_Web_API.Controllers
 	[ApiController]
 	[Authorize]
 	public class SeekerController(ICVService cvService, IResponseService responseService,
-		ITabsService tabsService) : ControllerBase
+		ITabsService tabsService) : RecruitingCompanyController
 	{
 		[HttpGet("GetCVs")]
 		public async Task<IActionResult> GetCVs()
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, cvs) = await cvService.GetCVsAsync(userNameClaim!.Value);
-			if (!findUserResult || cvs == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { cvs });
+			var result = await cvService.GetCVsAsync(UserName);
+			return ProcessResult(result, () => Ok(new { cvs = result.Value }));
 		}
 
 		[HttpPost("AddCV")]
 		public async Task<IActionResult> UploadCV(CVModel model)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (modelValidResult, findUserResult, cv) = await cvService.UploadCVAsync(model, userNameClaim!.Value);
-			if (!modelValidResult || !findUserResult || cv == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { cv });
+			var result = await cvService.UploadCVAsync(model, UserName);
+			return ProcessResult(result, () => Ok(new { cv = result.Value }));
 		}
 
 		[HttpDelete("DeleteCV/{id}")]
 		public async Task<IActionResult> DeleteCV(ulong id)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findCVResult) = await cvService.DeleteCVAsync(id, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findCVResult)
-			{
-				return NotFound();
-			}
-			return Ok();
+			var result = await cvService.DeleteCVAsync(id, UserName);
+			return ProcessResult(result, Ok);
 		}
 
 		[HttpPost("VacancyResponding")]
 		public async Task<IActionResult> RespondToVacancy(ResponseModel model)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult, findCVResult, response)
-				= await responseService.RespondToVacancyAsync(model, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findVacancyResult || !findCVResult)
-			{
-				return NotFound();
-			}
-			if (response == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { response });
+			var result = await responseService.RespondToVacancyAsync(model, UserName);
+			return ProcessResult(result, () => Ok(new { response = result.Value }));
 		}
 
 		[HttpGet("GetResponses")]
 		public async Task<IActionResult> GetResponses()
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, responses) = await responseService.GetResponsesAsync(userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			return Ok(new { responses });
+			var result = await responseService.GetResponsesAsync(UserName);
+			return ProcessResult(result, () => Ok(new { responses = result.Value }));
 		}
 
 		[HttpGet("IsResponsed/{vacancyId}")]
 		public async Task<IActionResult> IsResponded(ulong vacancyId)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, isResponded) = await responseService.CheckIsRespondedAsync(vacancyId, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			return Ok(new { isResponded });
+			var result = await responseService.CheckIsRespondedAsync(vacancyId, UserName);
+			return ProcessResult(result, () => Ok(new { isResponded = result.Value }));
 		}
 
 		[HttpGet("GetTabs")]
 		public async Task<IActionResult> GetTabs()
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, tabs) = await tabsService.GetTabsAsync(userNameClaim!.Value);
-			if (!findUserResult || tabs == null)
-			{
-				return BadRequest();
-			}
-			return Ok(new { tabs });
+			var result = await tabsService.GetTabsAsync(UserName);
+			return ProcessResult(result, () => Ok(new { tabs = result.Value }));
 		}
 
 		[HttpPost("AddTab")]
 		public async Task<IActionResult> AddVacansyToTab(TabModel model)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult) = await tabsService.AddVacansyToTabAsync(model, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findVacancyResult)
-			{
-				return NotFound();
-			}
-			return Ok();
+			var result = await tabsService.AddVacansyToTabAsync(model, UserName);
+			return ProcessResult(result, Ok);
 		}
 
 		[HttpDelete("DeleteTab/{vacancyId}")]
 		public async Task<IActionResult> DeleteTab(ulong vacancyId)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, findVacancyResult, findTabResult)
-				= await tabsService.DeleteTabAsync(vacancyId, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			if (!findVacancyResult || !findTabResult)
-			{
-				return NotFound();
-			}
-			return Ok();
+			var result = await tabsService.DeleteTabAsync(vacancyId, UserName);
+			return ProcessResult(result, Ok);
 		}
 
 		[HttpGet("IsNoted/{vacancyId}")]
 		public async Task<IActionResult> IsNoted(ulong vacancyId)
 		{
-			var userNameClaim = User.FindFirst(ClaimTypes.Name);
-			var (findUserResult, isNoted) = await tabsService.CheckIsNotedAsync(vacancyId, userNameClaim!.Value);
-			if (!findUserResult)
-			{
-				return BadRequest();
-			}
-			return Ok(new { isNoted });
+			var result = await tabsService.CheckIsNotedAsync(vacancyId, UserName);
+			return ProcessResult(result, () => Ok(new { isNoted = result.Value }));
 		}
 	}
 }

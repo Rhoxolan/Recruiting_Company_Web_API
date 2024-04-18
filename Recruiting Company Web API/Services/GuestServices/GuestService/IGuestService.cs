@@ -4,8 +4,8 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 {
 	public interface IGuestService
 	{
-		Task<IEnumerable<dynamic>> GetVacanciesAsync(VacancyRequestParameters requestParameters);
-		Task<int> GetVacanciesCountAsync(VacancyRequestParameters requestParameters);
-		Task<dynamic?> GetVacancyAsync(ulong id);
+		Task<ServiceResult<IEnumerable<dynamic>>> GetVacanciesAsync(VacancyRequestParameters requestParameters);
+		Task<ServiceResult<int>> GetVacanciesCountAsync(VacancyRequestParameters requestParameters);
+		Task<ServiceResult<dynamic>> GetVacancyAsync(ulong id);
 	}
 }
