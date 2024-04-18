@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Recruiting_Company_Web_API.Exceptions;
 using Recruiting_Company_Web_API.Services;
 using System.Security.Claims;
+using System.Text.Json;
 using static Recruiting_Company_Web_API.Services.ServiceErrorType;
 
 namespace Recruiting_Company_Web_API.Infrastructure
@@ -32,7 +34,7 @@ namespace Recruiting_Company_Web_API.Infrastructure
 			}
 			else
 			{
-				throw new Exception();
+				throw new ProcessResultException();
 			}
 		}
 	}
