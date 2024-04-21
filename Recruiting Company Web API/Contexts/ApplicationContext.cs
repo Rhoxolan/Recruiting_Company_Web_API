@@ -5,7 +5,7 @@ using Recruiting_Company_Web_API.Entities;
 
 namespace Recruiting_Company_Web_API.Contexts
 {
-	public class ApplicationContext : IdentityDbContext
+	public class ApplicationContext(DbContextOptions<ApplicationContext> options) : IdentityDbContext(options)
 	{
 		public DbSet<IdentityUser> IdentityUsers { get; set; }
 		public DbSet<Employer> Employers { get; set; }
@@ -15,11 +15,6 @@ namespace Recruiting_Company_Web_API.Contexts
 		public DbSet<CV> CVs { get; set; }
 		public DbSet<Response> Responses { get; set; }
 		public DbSet<SeekerTab> SeekersTabs { get; set; }
-
-		public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
-		{
-			Database.EnsureCreated();
-		}
 
 		protected override void OnModelCreating(ModelBuilder builder)
 		{
