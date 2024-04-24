@@ -1,48 +1,48 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.VacancyDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.EmployerModels;
-using System.Collections.Generic;
 
 namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 {
 	public class EmployerService(ApplicationContext context, UserManager<Employer> userManager) : IEmployerService
 	{
-		public async Task<ServiceResult<IEnumerable<dynamic>>> GetVacanciesAsync(string name)
+		public async Task<ServiceResult<List<VacancyDTO>>> GetVacanciesAsync(string name)
 		{
 			var employer = await userManager.FindByNameAsync(name);
 			if (employer == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<List<VacancyDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var vacancies = await GetVacancies(employer.Id)
-				.Select(v => new
+				.Select(v => new VacancyDTO
 				{
-					v.Id,
-					v.CategoryID,
-					v.CreateDate,
-					v.Title,
-					v.Location,
-					v.Salary,
-					v.PhoneNumber,
-					v.EMail,
-					v.Description
+					Id = v.Id,
+					CategoryID = v.CategoryID,
+					CreateDate = v.CreateDate,
+					Title = v.Title,
+					Location = v.Location,
+					Salary = v.Salary,
+					PhoneNumber = v.PhoneNumber,
+					EMail = v.EMail,
+					Description = v.Description
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<dynamic>>.Success(vacancies);
+			return ServiceResult<List<VacancyDTO>>.Success(vacancies);
 		}
 
-		public async Task<ServiceResult<dynamic>> AddVacancyAsync(VacancyModel model, string name)
+		public async Task<ServiceResult<VacancyDTO>> AddVacancyAsync(VacancyModel model, string name)
 		{
 			var employer = await userManager.FindByNameAsync(name);
 			if (employer == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<VacancyDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var category = await context.Categories.FindAsync(model.CategoryID);
 			if (category == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound, "Category not found!");
+				return ServiceResult<VacancyDTO>.Failure(ServiceErrorType.EntityNotFound, "Category not found!");
 			}
 			var vacancyEntity = new Vacancy
 			{
@@ -58,40 +58,41 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			};
 			await context.Vacancies.AddAsync(vacancyEntity);
 			await context.SaveChangesAsync();
-			var vacancy = new
+			var vacancy = new VacancyDTO
 			{
-				vacancyEntity.Id,
+				Id = vacancyEntity.Id,
 				CategoryID = vacancyEntity.Category.Id,
-				vacancyEntity.CreateDate,
-				vacancyEntity.Title,
-				vacancyEntity.Salary,
-				vacancyEntity.PhoneNumber,
-				vacancyEntity.EMail,
-				vacancyEntity.Description
+				CreateDate = vacancyEntity.CreateDate,
+				Title = vacancyEntity.Title,
+				Location = vacancyEntity.Location,
+				Salary = vacancyEntity.Salary,
+				PhoneNumber = vacancyEntity.PhoneNumber,
+				EMail = vacancyEntity.EMail,
+				Description = vacancyEntity.Description
 			};
-			return ServiceResult<dynamic>.Success(vacancy);
+			return ServiceResult<VacancyDTO>.Success(vacancy);
 		}
 
-		public async Task<ServiceResult<dynamic>> EditVacansyAsync(VacancyModel model, string name)
+		public async Task<ServiceResult<VacancyDTO>> EditVacansyAsync(VacancyModel model, string name)
 		{
 			if (model.Id == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.BadModel, "Id is null!");
+				return ServiceResult<VacancyDTO>.Failure(ServiceErrorType.BadModel, "Id is null!");
 			}
 			var employer = await userManager.FindByNameAsync(name);
 			if (employer == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<VacancyDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var category = await context.Categories.FindAsync(model.CategoryID);
 			if (category == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound, "Category not found!");
+				return ServiceResult<VacancyDTO>.Failure(ServiceErrorType.EntityNotFound, "Category not found!");
 			}
 			var vacancyEntity = await GetVacancies(employer.Id, model.Id).FirstOrDefaultAsync();
 			if (vacancyEntity == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
+				return ServiceResult<VacancyDTO>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
 			}
 			vacancyEntity.Title = model.Title;
 			vacancyEntity.Location = model.Location;
@@ -102,18 +103,19 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			vacancyEntity.EMail = model.EMail;
 			vacancyEntity.Description = model.Description;
 			await context.SaveChangesAsync();
-			var vacancy = new
+			var vacancy = new VacancyDTO
 			{
-				vacancyEntity.Id,
-				vacancyEntity.CategoryID,
-				vacancyEntity.CreateDate,
-				vacancyEntity.Title,
-				vacancyEntity.Salary,
-				vacancyEntity.PhoneNumber,
-				vacancyEntity.EMail,
-				vacancyEntity.Description
+				Id = vacancyEntity.Id,
+				CategoryID = vacancyEntity.CategoryID,
+				CreateDate = vacancyEntity.CreateDate,
+				Title = vacancyEntity.Title,
+				Location = vacancyEntity.Location,
+				Salary = vacancyEntity.Salary,
+				PhoneNumber = vacancyEntity.PhoneNumber,
+				EMail = vacancyEntity.EMail,
+				Description = vacancyEntity.Description
 			};
-			return ServiceResult<dynamic>.Success(vacancy);
+			return ServiceResult<VacancyDTO>.Success(vacancy);
 		}
 
 		public async Task<ServiceResult> DeleteVacancyAsync(ulong id, string name)
