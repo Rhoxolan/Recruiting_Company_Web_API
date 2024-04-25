@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.ResponseDTOs;
 using Recruiting_Company_Web_API.DTOs.VacancyDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.EmployerModels;
@@ -135,28 +136,28 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return ServiceResult.Success();
 		}
 
-		public async Task<ServiceResult<IEnumerable<dynamic>>> GetVacancyResponsesAsync(ulong id, string name)
+		public async Task<ServiceResult<IEnumerable<ResponseDTO>>> GetVacancyResponsesAsync(ulong id, string name)
 		{
 			var employer = await userManager.FindByNameAsync(name);
 			if (employer == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<IEnumerable<ResponseDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var vacancy = await GetVacancies(employer.Id, id).FirstOrDefaultAsync();
 			if (vacancy == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
+				return ServiceResult<IEnumerable<ResponseDTO>>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
 			}
 			var responses = await GetResponses(employer.Id, vacancyId: vacancy.Id)
-				.Select(r => new
+				.Select(r => new ResponseDTO
 				{
-					r.Id,
-					r.ResponseTime,
+					Id = r.Id,
+					ResponseTime = r.ResponseTime,
 					IsLink = r.CV.Link != null,
 					IsFile = r.CV.File != null,
-					r.CV.Link
+					Link = r.CV.Link
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<dynamic>>.Success(responses);
+			return ServiceResult<IEnumerable<ResponseDTO>>.Success(responses);
 		}
 
 		public async Task<ServiceResult<dynamic>> GetVacancyResponseCVFileAsync(ulong id, string name)

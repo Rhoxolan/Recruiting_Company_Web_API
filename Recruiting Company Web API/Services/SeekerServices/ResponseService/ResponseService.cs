@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.ResponseDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.SeekerModels;
 
@@ -8,17 +9,17 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 {
 	public class ResponseService(UserManager<Seeker> userManager, ApplicationContext context) : IResponseService
 	{
-		public async Task<ServiceResult<dynamic>> RespondToVacancyAsync(ResponseModel model, string name)
+		public async Task<ServiceResult<OwnResponseDTO>> RespondToVacancyAsync(ResponseModel model, string name)
 		{
 			var seeker = await userManager.FindByNameAsync(name);
 			if (seeker == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<OwnResponseDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var vacancy = await context.Vacancies.FindAsync(model.VacancyId);
 			if (vacancy == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
+				return ServiceResult<OwnResponseDTO>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
 			}
 			var cv = await context.CVs
 				.Where(c => c.SeekerID == seeker.Id)
@@ -26,7 +27,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 				.FirstOrDefaultAsync();
 			if (cv == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound, "CV not found!");
+				return ServiceResult<OwnResponseDTO>.Failure(ServiceErrorType.EntityNotFound, "CV not found!");
 			}
 			var responseEntity = new Response
 			{
@@ -36,11 +37,11 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 			};
 			await context.Responses.AddAsync(responseEntity);
 			await context.SaveChangesAsync();
-			var response = new
+			var response = new OwnResponseDTO
 			{
-				responseEntity.Id,
-				responseEntity.ResponseTime,
-				responseEntity.VacancyID,
+				Id = responseEntity.Id,
+				ResponseTime = responseEntity.ResponseTime,
+				VacancyID = responseEntity.VacancyID,
 				CVId = cv!.Id,
 				CVUploadDate = cv.UploadDate,
 				File = cv.File != null ? Convert.ToBase64String(cv.File) : null,
@@ -49,24 +50,24 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 				IsLink = cv.Link != null,
 				Link = cv.Link ?? null
 			};
-			return ServiceResult<dynamic>.Success(response);
+			return ServiceResult<OwnResponseDTO>.Success(response);
 		}
 
-		public async Task<ServiceResult<IEnumerable<dynamic>>> GetResponsesAsync(string name)
+		public async Task<ServiceResult<IEnumerable<OwnResponseDTO>>> GetResponsesAsync(string name)
 		{
 			var seeker = await userManager.FindByNameAsync(name);
 			if (seeker == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<IEnumerable<OwnResponseDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var responses = await context.Responses
 				.Where(c => c.CV.SeekerID == seeker.Id)
-				.Select(r => new
+				.Select(r => new OwnResponseDTO
 				{
-					r.Id,
-					r.ResponseTime,
-					r.VacancyID,
-					r.CVID,
+					Id = r.Id,
+					ResponseTime = r.ResponseTime,
+					VacancyID = r.VacancyID,
+					CVId = r.CVID,
 					CVUploadDate = r.CV.UploadDate,
 					File = r.CV.File != null ? Convert.ToBase64String(r.CV.File) : null,
 					Format = r.CV.File != null ? r.CV.FileFormat : null,
@@ -74,7 +75,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 					IsLink = r.CV.Link != null,
 					Link = r.CV.Link ?? null
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<dynamic>>.Success(responses);
+			return ServiceResult<IEnumerable<OwnResponseDTO>>.Success(responses);
 		}
 
 		public async Task<ServiceResult<bool>> CheckIsRespondedAsync(ulong vacancyId, string name)
