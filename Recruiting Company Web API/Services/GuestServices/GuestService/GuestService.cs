@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.VacancyDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.RequestParameters.GuestRequestParameters;
 
@@ -7,29 +8,29 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 {
 	public class GuestService(ApplicationContext context) : IGuestService
 	{
-		public async Task<ServiceResult<dynamic>> GetVacancyAsync(ulong id)
+		public async Task<ServiceResult<CommonVacancyDTO>> GetVacancyAsync(ulong id)
 		{
 			var vacancy = await context.Vacancies
 				.Where(v => v.Id == id)
-				.Select(v => new
+				.Select(v => new CommonVacancyDTO
 				{
-					v.Id,
-					v.CategoryID,
+					Id = v.Id,
+					CategoryID = v.CategoryID,
 					EmployerID = v.Employer.PublicId,
 					Employer = v.Employer.CompanyName,
-					v.CreateDate,
-					v.Title,
-					v.Location,
-					v.Salary,
-					v.PhoneNumber,
-					v.EMail,
-					v.Description
+					CreateDate = v.CreateDate,
+					Title = v.Title,
+					Location = v.Location,
+					Salary = v.Salary,
+					PhoneNumber = v.PhoneNumber,
+					EMail = v.EMail,
+					Description = v.Description
 				}).FirstOrDefaultAsync();
 			if (vacancy == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound);
+				return ServiceResult<CommonVacancyDTO>.Failure(ServiceErrorType.EntityNotFound);
 			}
-			return ServiceResult<dynamic>.Success(vacancy);
+			return ServiceResult<CommonVacancyDTO>.Success(vacancy);
 		}
 
 		public async Task<ServiceResult<int>> GetVacanciesCountAsync(VacancyRequestParameters requestParameters)
@@ -38,32 +39,32 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 			return ServiceResult<int>.Success(vacanciesCount);
 		}
 
-		public async Task<ServiceResult<IEnumerable<dynamic>>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
+		public async Task<ServiceResult<IEnumerable<CommonVacancyDTO>>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
 		{
 			if (requestParameters.PageNumber == null || requestParameters.Pagesize == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.BadModel,
+				return ServiceResult<IEnumerable<CommonVacancyDTO>>.Failure(ServiceErrorType.BadModel,
 					requestParameters.PageNumber == null ? "Page number is null" : "Page size is null");
 			}
 			var vacancies = await GetVacancies(requestParameters)
 				.OrderBy(v => v.CreateDate)
 				.Skip((requestParameters.PageNumber.Value - 1) * requestParameters.Pagesize.Value)
 				.Take(requestParameters.Pagesize.Value)
-				.Select(v => new
+				.Select(v => new CommonVacancyDTO
 				{
-					v.Id,
-					v.CategoryID,
+					Id = v.Id,
+					CategoryID = v.CategoryID,
 					EmployerID = v.Employer.PublicId,
 					Employer = v.Employer.CompanyName,
-					v.CreateDate,
-					v.Title,
-					v.Location,
-					v.Salary,
-					v.PhoneNumber,
-					v.EMail,
-					v.Description
+					CreateDate = v.CreateDate,
+					Title = v.Title,
+					Location = v.Location,
+					Salary = v.Salary,
+					PhoneNumber = v.PhoneNumber,
+					EMail = v.EMail,
+					Description = v.Description
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<dynamic>>.Success(vacancies);
+			return ServiceResult<IEnumerable<CommonVacancyDTO>>.Success(vacancies);
 		}
 
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)
