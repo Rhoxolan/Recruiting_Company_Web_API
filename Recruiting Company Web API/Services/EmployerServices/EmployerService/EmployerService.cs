@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.FileDTOs;
 using Recruiting_Company_Web_API.DTOs.ResponseDTOs;
 using Recruiting_Company_Web_API.DTOs.VacancyDTOs;
 using Recruiting_Company_Web_API.Entities;
@@ -160,26 +161,25 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return ServiceResult<IEnumerable<ResponseDTO>>.Success(responses);
 		}
 
-		public async Task<ServiceResult<dynamic>> GetVacancyResponseCVFileAsync(ulong id, string name)
+		public async Task<ServiceResult<FileDTO>> GetVacancyResponseCVFileAsync(ulong id, string name)
 		{
 			var employer = await userManager.FindByNameAsync(name);
 			if (employer == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<FileDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var responseCVFile = await GetResponses(employer.Id, id: id)
-				.Select(r => new
+				.Select(r => new FileDTO
 				{
-					FileName = string.Format("CV_to_Vacansy_{0}",
-					r.Vacancy.Title.Length > 7 ? $"{r.Vacancy.Title.Substring(0, 7)}..._" : r.Vacancy.Title),
-					r.CV.FileFormat,
+					FileName = string.Format("CV_to_Vacansy_{0}", r.Vacancy.Title.Length > 7 ? $"{r.Vacancy.Title.Substring(0, 7)}..._" : r.Vacancy.Title),
+					FileFormat = r.CV.FileFormat,
 					File = r.CV.File != null ? Convert.ToBase64String(r.CV.File) : null
 				}).FirstOrDefaultAsync();
 			if (responseCVFile == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.EntityNotFound, "The response CV file not found!");
+				return ServiceResult<FileDTO>.Failure(ServiceErrorType.EntityNotFound, "The response CV file not found!");
 			}
-			return ServiceResult<dynamic>.Success(responseCVFile);
+			return ServiceResult<FileDTO>.Success(responseCVFile);
 		}
 
 		private IQueryable<Vacancy> GetVacancies(string userID, ulong? id = null)
