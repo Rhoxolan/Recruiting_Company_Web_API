@@ -19,4 +19,4 @@ jobs:
         server: 155.254.244.30
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: /www.Recruiting-Company-Web-API.somee.com
+        server-dir: /www.Recruiting-Company-Web-API.somee.com/
