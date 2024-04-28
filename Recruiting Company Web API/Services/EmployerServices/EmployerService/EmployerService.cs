@@ -137,17 +137,17 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 			return ServiceResult.Success();
 		}
 
-		public async Task<ServiceResult<IEnumerable<ResponseDTO>>> GetVacancyResponsesAsync(ulong id, string name)
+		public async Task<ServiceResult<List<ResponseDTO>>> GetVacancyResponsesAsync(ulong id, string name)
 		{
 			var employer = await userManager.FindByNameAsync(name);
 			if (employer == null)
 			{
-				return ServiceResult<IEnumerable<ResponseDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<List<ResponseDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var vacancy = await GetVacancies(employer.Id, id).FirstOrDefaultAsync();
 			if (vacancy == null)
 			{
-				return ServiceResult<IEnumerable<ResponseDTO>>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
+				return ServiceResult<List<ResponseDTO>>.Failure(ServiceErrorType.EntityNotFound, "Vacancy not found!");
 			}
 			var responses = await GetResponses(employer.Id, vacancyId: vacancy.Id)
 				.Select(r => new ResponseDTO
@@ -158,7 +158,7 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 					IsFile = r.CV.File != null,
 					Link = r.CV.Link
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<ResponseDTO>>.Success(responses);
+			return ServiceResult<List<ResponseDTO>>.Success(responses);
 		}
 
 		public async Task<ServiceResult<FileDTO>> GetVacancyResponseCVFileAsync(ulong id, string name)

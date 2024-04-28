@@ -39,11 +39,11 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 			return ServiceResult<int>.Success(vacanciesCount);
 		}
 
-		public async Task<ServiceResult<IEnumerable<CommonVacancyDTO>>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
+		public async Task<ServiceResult<List<CommonVacancyDTO>>> GetVacanciesAsync(VacancyRequestParameters requestParameters)
 		{
 			if (requestParameters.PageNumber == null || requestParameters.Pagesize == null)
 			{
-				return ServiceResult<IEnumerable<CommonVacancyDTO>>.Failure(ServiceErrorType.BadModel,
+				return ServiceResult<List<CommonVacancyDTO>>.Failure(ServiceErrorType.BadModel,
 					requestParameters.PageNumber == null ? "Page number is null" : "Page size is null");
 			}
 			var vacancies = await GetVacancies(requestParameters)
@@ -64,7 +64,7 @@ namespace Recruiting_Company_Web_API.Services.GuestServices.GuestService
 					EMail = v.EMail,
 					Description = v.Description
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<CommonVacancyDTO>>.Success(vacancies);
+			return ServiceResult<List<CommonVacancyDTO>>.Success(vacancies);
 		}
 
 		private IQueryable<Vacancy> GetVacancies(VacancyRequestParameters requestParameters)

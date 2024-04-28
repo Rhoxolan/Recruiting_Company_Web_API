@@ -12,6 +12,6 @@ namespace Recruiting_Company_Web_API.Services.EmployerServices.EmployerService
 		Task<ServiceResult<VacancyDTO>> EditVacansyAsync(VacancyModel model, string name);
 		Task<ServiceResult<List<VacancyDTO>>> GetVacanciesAsync(string name);
 		Task<ServiceResult<FileDTO>> GetVacancyResponseCVFileAsync(ulong id, string name);
-		Task<ServiceResult<IEnumerable<ResponseDTO>>> GetVacancyResponsesAsync(ulong id, string name);
+		Task<ServiceResult<List<ResponseDTO>>> GetVacancyResponsesAsync(ulong id, string name);
 	}
 }

@@ -53,12 +53,12 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 			return ServiceResult<OwnResponseDTO>.Success(response);
 		}
 
-		public async Task<ServiceResult<IEnumerable<OwnResponseDTO>>> GetResponsesAsync(string name)
+		public async Task<ServiceResult<List<OwnResponseDTO>>> GetResponsesAsync(string name)
 		{
 			var seeker = await userManager.FindByNameAsync(name);
 			if (seeker == null)
 			{
-				return ServiceResult<IEnumerable<OwnResponseDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<List<OwnResponseDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var responses = await context.Responses
 				.Where(c => c.CV.SeekerID == seeker.Id)
@@ -75,7 +75,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 					IsLink = r.CV.Link != null,
 					Link = r.CV.Link ?? null
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<OwnResponseDTO>>.Success(responses);
+			return ServiceResult<List<OwnResponseDTO>>.Success(responses);
 		}
 
 		public async Task<ServiceResult<bool>> CheckIsRespondedAsync(ulong vacancyId, string name)
