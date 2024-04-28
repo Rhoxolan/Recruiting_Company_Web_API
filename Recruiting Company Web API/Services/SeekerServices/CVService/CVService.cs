@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.CVDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.SeekerModels;
 
@@ -8,47 +9,47 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 {
 	public class CVService(UserManager<Seeker> userManager, ApplicationContext context) : ICVService
 	{
-		public async Task<ServiceResult<IEnumerable<dynamic>>> GetCVsAsync(string name)
+		public async Task<ServiceResult<List<CVDTO>>> GetCVsAsync(string name)
 		{
 			var seeker = await userManager.FindByNameAsync(name);
 			if (seeker == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<List<CVDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var cvs = await context.CVs
 				.Where(c => c.SeekerID == seeker.Id)
-				.Select(c => new
+				.Select(c => new CVDTO
 				{
-					c.Id,
-					c.UploadDate,
+					Id = c.Id,
+					UploadDate = c.UploadDate,
 					File = c.File != null ? Convert.ToBase64String(c.File) : null,
 					Format = c.File != null ? c.FileFormat : null,
 					IsFile = c.File != null,
 					IsLink = c.Link != null,
 					Link = c.Link ?? null
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<dynamic>>.Success(cvs);
+			return ServiceResult<List<CVDTO>>.Success(cvs);
 		}
 
-		public async Task<ServiceResult<dynamic>> UploadCVAsync(CVModel model, string name)
+		public async Task<ServiceResult<CVDTO>> UploadCVAsync(CVModel model, string name)
 		{
 			var seeker = await userManager.FindByNameAsync(name);
 			if (seeker == null)
 			{
-				return ServiceResult<dynamic>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<CVDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			if (model.File != null && model.Link == null)
 			{
-				return ServiceResult<dynamic>.Success(await UploadCVAsFileAsync(model, seeker));
+				return ServiceResult<CVDTO>.Success(await UploadCVAsFileAsync(model, seeker));
 			}
 			else if (model.File == null && model.Link != null)
 			{
-				return ServiceResult<dynamic>.Success(await UploadCVAsLinkAsync(model, seeker));
+				return ServiceResult<CVDTO>.Success(await UploadCVAsLinkAsync(model, seeker));
 			}
-			return ServiceResult<dynamic>.Failure(ServiceErrorType.BadModel, "Bad Model!");
+			return ServiceResult<CVDTO>.Failure(ServiceErrorType.BadModel, "Bad Model!");
 		}
 
-		private async Task<dynamic> UploadCVAsFileAsync(CVModel model, Seeker seeker)
+		private async Task<CVDTO> UploadCVAsFileAsync(CVModel model, Seeker seeker)
 		{
 			var cvEntity = new CV
 			{
@@ -59,18 +60,19 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 			};
 			await context.CVs.AddAsync(cvEntity);
 			await context.SaveChangesAsync();
-			return new
+			return new CVDTO
 			{
-				cvEntity.Id,
-				model.File,
-				cvEntity.FileFormat,
-				cvEntity.UploadDate,
+				Id = cvEntity.Id,
+				File = model.File,
+				Format = cvEntity.FileFormat,
+				UploadDate = cvEntity.UploadDate,
 				IsFile = true,
-				IsLink = false
+				IsLink = false,
+				Link = cvEntity.Link
 			};
 		}
 
-		private async Task<dynamic> UploadCVAsLinkAsync(CVModel model, Seeker seeker)
+		private async Task<CVDTO> UploadCVAsLinkAsync(CVModel model, Seeker seeker)
 		{
 			var cvEntity = new CV
 			{
@@ -80,13 +82,15 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 			};
 			await context.CVs.AddAsync(cvEntity);
 			await context.SaveChangesAsync();
-			return new
+			return new CVDTO
 			{
-				cvEntity.Id,
-				model.Link,
-				cvEntity.UploadDate,
+				Id = cvEntity.Id,
+				Link = model.Link,
+				UploadDate = cvEntity.UploadDate,
 				IsFile = false,
-				IsLink = true
+				IsLink = true,
+				File = model.File,
+				Format = model.FileFormat,
 			};
 		}
 

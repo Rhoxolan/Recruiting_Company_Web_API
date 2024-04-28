@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.VacancyDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.SeekerModels;
 
@@ -32,31 +33,31 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.TabsService
 			return ServiceResult.Success();
 		}
 
-		public async Task<ServiceResult<IEnumerable<dynamic>>> GetTabsAsync(string name)
+		public async Task<ServiceResult<List<CommonVacancyDTO>>> GetTabsAsync(string name)
 		{
 			var seeker = await userManager.FindByNameAsync(name);
 			if (seeker == null)
 			{
-				return ServiceResult<IEnumerable<dynamic>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+				return ServiceResult<List<CommonVacancyDTO>>.Failure(ServiceErrorType.UserNotFound, "User not found!");
 			}
 			var tabs = await context.SeekersTabs
 				.Where(t => t.SeekerID == seeker.Id)
 				.OrderBy(t => t.Vacancy.CreateDate)
-				.Select(t => new
+				.Select(t => new CommonVacancyDTO
 				{
-					t.Vacancy.Id,
-					t.Vacancy.CategoryID,
+					Id = t.Vacancy.Id,
+					CategoryID = t.Vacancy.CategoryID,
 					EmployerID = t.Vacancy.Employer.PublicId,
 					Employer = t.Vacancy.Employer.CompanyName,
-					t.Vacancy.CreateDate,
-					t.Vacancy.Title,
-					t.Vacancy.Location,
-					t.Vacancy.Salary,
-					t.Vacancy.PhoneNumber,
-					t.Vacancy.EMail,
-					t.Vacancy.Description
+					CreateDate = t.Vacancy.CreateDate,
+					Title = t.Vacancy.Title,
+					Location = t.Vacancy.Location,
+					Salary = t.Vacancy.Salary,
+					PhoneNumber = t.Vacancy.PhoneNumber,
+					EMail = t.Vacancy.EMail,
+					Description = t.Vacancy.Description
 				}).ToListAsync();
-			return ServiceResult<IEnumerable<dynamic>>.Success(tabs);
+			return ServiceResult<List<CommonVacancyDTO>>.Success(tabs);
 		}
 
 		public async Task<ServiceResult> DeleteTabAsync(ulong id, string name)
