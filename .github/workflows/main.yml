@@ -16,7 +16,7 @@ jobs:
     - name: Sync files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
-        server: ${{ github.FTP_SERVER }}
+        server: ${{ env.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: ${{ github.FTP_SERVER_DIR }}
+        server-dir: ${{ env.FTP_SERVER_DIR }}
