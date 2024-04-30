@@ -56,6 +56,13 @@ namespace Recruiting_Company_Web_API.Controllers
 			return ProcessResult(result, () => Ok(new { responses = result.Value }));
 		}
 
+		[HttpGet("GetResponseCVFile/{id}")]
+		public async Task<IActionResult> GetResponseCVFile(ulong id)
+		{
+			var result = await responseService.GetResponseCVFileAsync(id, UserName);
+			return ProcessResult(result, () => Ok(new { responseCVFile = result.Value }));
+		}
+
 		[HttpGet("IsResponsed/{vacancyId}")]
 		public async Task<IActionResult> IsResponded(ulong vacancyId)
 		{

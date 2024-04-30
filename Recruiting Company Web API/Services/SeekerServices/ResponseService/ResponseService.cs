@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
+using Recruiting_Company_Web_API.DTOs.FileDTOs;
 using Recruiting_Company_Web_API.DTOs.ResponseDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.SeekerModels;
@@ -44,8 +45,6 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 				VacancyID = responseEntity.VacancyID,
 				CVId = cv!.Id,
 				CVUploadDate = cv.UploadDate,
-				File = cv.File != null ? Convert.ToBase64String(cv.File) : null,
-				Format = cv.File != null ? cv.FileFormat : null,
 				IsFile = cv.File != null,
 				IsLink = cv.Link != null,
 				Link = cv.Link ?? null
@@ -69,13 +68,35 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.ResponseService
 					VacancyID = r.VacancyID,
 					CVId = r.CVID,
 					CVUploadDate = r.CV.UploadDate,
-					File = r.CV.File != null ? Convert.ToBase64String(r.CV.File) : null,
-					Format = r.CV.File != null ? r.CV.FileFormat : null,
 					IsFile = r.CV.File != null,
 					IsLink = r.CV.Link != null,
 					Link = r.CV.Link ?? null
 				}).ToListAsync();
 			return ServiceResult<List<OwnResponseDTO>>.Success(responses);
+		}
+
+		public async Task<ServiceResult<FileDTO>> GetResponseCVFileAsync(ulong responseId, string name)
+		{
+			var seeker = await userManager.FindByNameAsync(name);
+			if (seeker == null)
+			{
+				return ServiceResult<FileDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+			}
+			var responseCVFile = await context.Responses
+				.Where(r => r.CV.SeekerID == seeker.Id)
+				.Where(r => r.CV.File != null)
+				.Where(r => r.Id == responseId)
+				.Select(r => new FileDTO
+				{
+					File = Convert.ToBase64String(r.CV.File!),
+					FileName = $"CV's file {r.CV.Id}",
+					FileFormat = r.CV.FileFormat
+				}).FirstOrDefaultAsync();
+			if (responseCVFile == null)
+			{
+				return ServiceResult<FileDTO>.Failure(ServiceErrorType.EntityNotFound, "The response CV file not found!");
+			}
+			return ServiceResult<FileDTO>.Success(responseCVFile);
 		}
 
 		public async Task<ServiceResult<bool>> CheckIsRespondedAsync(ulong vacancyId, string name)
