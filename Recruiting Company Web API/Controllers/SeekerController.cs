@@ -21,6 +21,13 @@ namespace Recruiting_Company_Web_API.Controllers
 			return ProcessResult(result, () => Ok(new { cvs = result.Value }));
 		}
 
+		[HttpGet("GetCVsFile/{id}")]
+		public async Task<IActionResult> GetCVsFile(ulong id)
+		{
+			var result = await cvService.GetCVsFileAsync(id, UserName);
+			return ProcessResult(result, () => Ok(new { cvsFile = result.Value }));
+		}
+
 		[HttpPost("AddCV")]
 		public async Task<IActionResult> UploadCV(CVModel model)
 		{
