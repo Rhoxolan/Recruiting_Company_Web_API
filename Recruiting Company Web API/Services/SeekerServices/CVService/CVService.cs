@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Recruiting_Company_Web_API.Contexts;
 using Recruiting_Company_Web_API.DTOs.CVDTOs;
+using Recruiting_Company_Web_API.DTOs.FileDTOs;
 using Recruiting_Company_Web_API.Entities;
 using Recruiting_Company_Web_API.Models.SeekerModels;
 
@@ -22,13 +23,35 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				{
 					Id = c.Id,
 					UploadDate = c.UploadDate,
-					File = c.File != null ? Convert.ToBase64String(c.File) : null,
-					Format = c.File != null ? c.FileFormat : null,
 					IsFile = c.File != null,
 					IsLink = c.Link != null,
 					Link = c.Link ?? null
 				}).ToListAsync();
 			return ServiceResult<List<CVDTO>>.Success(cvs);
+		}
+
+		public async Task<ServiceResult<FileDTO>> GetCVsFileAsync(ulong id, string name)
+		{
+			var seeker = await userManager.FindByNameAsync(name);
+			if (seeker == null)
+			{
+				return ServiceResult<FileDTO>.Failure(ServiceErrorType.UserNotFound, "User not found!");
+			}
+			var file = await context.CVs
+				.Where(c => c.SeekerID == seeker.Id)
+				.Where(c => c.File != null)
+				.Where(c => c.Id == id)
+				.Select(c => new FileDTO
+				{
+					File = c.File != null ? Convert.ToBase64String(c.File) : null,
+					FileName = $"CV's file {c.Id}",
+					FileFormat = c.FileFormat
+				}).FirstOrDefaultAsync();
+			if (file == null)
+			{
+				return ServiceResult<FileDTO>.Failure(ServiceErrorType.EntityNotFound, "The CV's file not found!");
+			}
+			return ServiceResult<FileDTO>.Success(file);
 		}
 
 		public async Task<ServiceResult<CVDTO>> UploadCVAsync(CVModel model, string name)
@@ -63,8 +86,6 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 			return new CVDTO
 			{
 				Id = cvEntity.Id,
-				File = model.File,
-				Format = cvEntity.FileFormat,
 				UploadDate = cvEntity.UploadDate,
 				IsFile = true,
 				IsLink = false,
@@ -88,9 +109,7 @@ namespace Recruiting_Company_Web_API.Services.SeekerServices.CVService
 				Link = model.Link,
 				UploadDate = cvEntity.UploadDate,
 				IsFile = false,
-				IsLink = true,
-				File = model.File,
-				Format = model.FileFormat,
+				IsLink = true
 			};
 		}
 
