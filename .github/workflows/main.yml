@@ -17,6 +17,6 @@ jobs:
       uses: airvzxf/ftp-deployment-action@latest
       with:
         server: ${{ vars.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
+        user: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: ${{ vars.FTP_SERVER_DIR }}
+        remote_dir: ${{ vars.FTP_SERVER_DIR }}
