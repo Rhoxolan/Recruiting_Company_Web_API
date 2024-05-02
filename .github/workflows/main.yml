@@ -19,5 +19,5 @@ jobs:
         ftp_host: ${{ vars.FTP_SERVER }}
         ftp_username: ${{ secrets.FTP_USERNAME }}
         ftp_password: ${{ secrets.FTP_PASSWORD }}
-        local_source_dir: "Recruiting_Company_Web_API"
+        local_source_dir: "Recruiting Company Web API"
         dist_target_dir: ${{ vars.FTP_SERVER_DIR }}
