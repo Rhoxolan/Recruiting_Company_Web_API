@@ -12,10 +12,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-
-    - name: Build project
-      run: dotnet build
-    
+      
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
