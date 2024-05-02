@@ -14,9 +14,10 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Delivery files
-      uses: airvzxf/ftp-deployment-action@latest
+      uses: kevinpainchaud/simple-ftp-deploy-action@v1.2.1
       with:
-        server: ${{ vars.FTP_SERVER }}
-        user: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        remote_dir: ${{ vars.FTP_SERVER_DIR }}
+        ftp_host: ${{ vars.FTP_SERVER }}
+        ftp_username: ${{ secrets.FTP_USERNAME }}
+        ftp_password: ${{ secrets.FTP_PASSWORD }}
+        local_source_dir: "Recruiting_Company_Web_API"
+        dist_target_dir: ${{ vars.FTP_SERVER_DIR }}
