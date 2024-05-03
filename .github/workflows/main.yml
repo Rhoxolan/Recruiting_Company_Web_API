@@ -12,6 +12,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Build project
+      run: dotnet build --configuration Release
+
+#    - name: Copy DLLs
+#      run: cp ../build-directory/* ...../
       
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
