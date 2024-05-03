@@ -15,6 +15,9 @@ jobs:
 
     - name: Build project
       run: dotnet build --configuration Release
+
+    - name: Copy files
+      run: cp d:\DZHosts\LocalUser\Rhoxolan\www.Recruiting-Company-Web-API.somee.com\Recruiting Company Web API\bin\Release\net8.0\* d:\DZHosts\LocalUser\Rhoxolan\www.Recruiting-Company-Web-API.somee.com\
       
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
