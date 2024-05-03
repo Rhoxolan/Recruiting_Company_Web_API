@@ -13,8 +13,8 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build project
-      run: dotnet build --configuration Release
+#    - name: Build project
+#      run: dotnet build --configuration Release
       
 #    - name: Copy DLLs
 #      run: cp ../build-directory/* ...../
