@@ -15,9 +15,6 @@ jobs:
 
     - name: Build project
       run: dotnet build --configuration Release
-
-    - name: Copy DLLs
-      run: cp www.Recruiting-Company-Web-API.somee.com/Recruiting Company Web API/bin/Release/net8.0/* ${{ vars.FTP_SERVER_DIR }}
       
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
