@@ -12,6 +12,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Build project
+      run: dotnet build --configuration Release
       
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -19,4 +22,4 @@ jobs:
         server: ${{ vars.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        server-dir: "/"
+        server-dir: ${{ vars.FTP_SERVER_DIR }}
