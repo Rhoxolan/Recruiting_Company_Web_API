@@ -23,3 +23,4 @@ jobs:
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
         server-dir: ${{ vars.FTP_SERVER_DIR }}
+ 
