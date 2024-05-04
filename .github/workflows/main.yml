@@ -17,8 +17,9 @@ jobs:
       run: dotnet build --configuration Release
 
     - name: Copy files
-      run: cp -rf "/home/runner/work/Recruiting_Company_Web_API/Recruiting_Company_Web_API/Recruiting Company Web API/bin/Release/net8.0/"* "/home/runner/work/Recruiting_Company_Web_API/Recruiting_Company_Web_API/"
-      
+#      run: cp -rf "/home/runner/work/Recruiting_Company_Web_API/Recruiting_Company_Web_API/Recruiting Company Web API/bin/Release/net8.0/"* "/home/runner/work/Recruiting_Company_Web_API/Recruiting_Company_Web_API/"
+      run: cd /home/runner/work/Recruiting_Company_Web_API/Recruiting_Company_Web_API/
+           cp -rf "Recruiting Company Web API/bin/Release/net8.0/"* ./
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
       with:
