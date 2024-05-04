@@ -8,13 +8,13 @@ on:
 jobs:
   web-deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
     - name: Build project
-      run: dotnet build --configuration Release --property:OutputPath="/home/runner/work/Recruiting_Company_Web_API/Recruiting_Company_Web_API/"
+      run: dotnet build --configuration Release
 
     - name: Delivery files
       uses: SamKirkland/FTP-Deploy-Action@v4.3.5
